@@ -1,0 +1,2 @@
+# Use system-provided pysubnettree package
+rm -v ./auxil/zeekctl/auxil/pysubnettree/CMakeLists.txt
