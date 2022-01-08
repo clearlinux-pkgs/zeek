@@ -7,7 +7,7 @@
 %define keepstatic 1
 Name     : zeek
 Version  : 4.0.4
-Release  : 6
+Release  : 7
 URL      : https://github.com/zeek/zeek/releases/download/v4.0.4/zeek-4.0.4.tar.gz
 Source0  : https://github.com/zeek/zeek/releases/download/v4.0.4/zeek-4.0.4.tar.gz
 Source1  : https://github.com/zeek/zeek/releases/download/v4.0.4/zeek-4.0.4.tar.gz.asc
@@ -21,13 +21,7 @@ Requires: zeek-license = %{version}-%{release}
 Requires: zeek-man = %{version}-%{release}
 Requires: zeek-python = %{version}-%{release}
 Requires: zeek-python3 = %{version}-%{release}
-Requires: GitPython
-Requires: Sphinx
-Requires: pysubnettree
-Requires: semantic_version
-Requires: sphinx_rtd_theme
-BuildRequires : GitPython
-BuildRequires : Sphinx
+Requires: pypi(pysubnettree)
 BuildRequires : bison
 BuildRequires : boost-dev
 BuildRequires : buildreq-cmake
@@ -43,11 +37,17 @@ BuildRequires : opencl-headers-dev
 BuildRequires : openssl-dev
 BuildRequires : protobuf-dev
 BuildRequires : pybind11-python3
-BuildRequires : pysubnettree
+BuildRequires : pypi(gitpython)
+BuildRequires : pypi(pysubnettree)
+BuildRequires : pypi(semantic_version)
+BuildRequires : pypi(setuptools)
+BuildRequires : pypi(sphinx)
+BuildRequires : pypi(sphinx_rtd_theme)
+BuildRequires : pypi(sphinxcontrib_napoleon)
+BuildRequires : pypi(wheel)
 BuildRequires : python3
 BuildRequires : python3-dev
 BuildRequires : qtbase-dev mesa-dev
-BuildRequires : semantic_version
 BuildRequires : swig
 BuildRequires : zlib-dev
 Patch1: 0001-Update-doctest-to-2.4.6.patch
@@ -127,6 +127,8 @@ python components for the zeek package.
 Summary: python3 components for the zeek package.
 Group: Default
 Requires: python3-core
+Requires: pypi(gitpython)
+Requires: pypi(semantic_version)
 
 %description python3
 python3 components for the zeek package.
@@ -155,7 +157,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1633061601
+export SOURCE_DATE_EPOCH=1641603206
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -186,7 +188,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 cd clr-build; make test
 
 %install
-export SOURCE_DATE_EPOCH=1633061601
+export SOURCE_DATE_EPOCH=1641603206
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/zeek
 cp %{_builddir}/zeek-4.0.4/COPYING %{buildroot}/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e
@@ -233,7 +235,7 @@ pushd clr-build
 %make_install
 popd
 ## Remove excluded files
-rm -f %{buildroot}/var/spool/zeek/zeekctl-config.sh
+rm -f %{buildroot}*/var/spool/zeek/zeekctl-config.sh
 
 %files
 %defattr(-,root,root,-)

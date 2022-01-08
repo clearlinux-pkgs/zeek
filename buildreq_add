@@ -4,6 +4,6 @@ bison
 flex
 libpcap-dev
 opencl-headers-dev
-pysubnettree
+pypi(pysubnettree)
 swig
 zlib-dev

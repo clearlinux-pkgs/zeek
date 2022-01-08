@@ -3,3 +3,6 @@
 beignet-dev
 btest
 gitpython
+pypi(btest)
+pypi(cmake)
+pypi(ninja)
