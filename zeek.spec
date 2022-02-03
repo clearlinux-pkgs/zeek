@@ -7,7 +7,7 @@
 %define keepstatic 1
 Name     : zeek
 Version  : 4.0.4
-Release  : 7
+Release  : 8
 URL      : https://github.com/zeek/zeek/releases/download/v4.0.4/zeek-4.0.4.tar.gz
 Source0  : https://github.com/zeek/zeek/releases/download/v4.0.4/zeek-4.0.4.tar.gz
 Source1  : https://github.com/zeek/zeek/releases/download/v4.0.4/zeek-4.0.4.tar.gz.asc
@@ -36,8 +36,8 @@ BuildRequires : libpcap-dev
 BuildRequires : opencl-headers-dev
 BuildRequires : openssl-dev
 BuildRequires : protobuf-dev
-BuildRequires : pybind11-python3
 BuildRequires : pypi(gitpython)
+BuildRequires : pypi(pybind11)
 BuildRequires : pypi(pysubnettree)
 BuildRequires : pypi(semantic_version)
 BuildRequires : pypi(setuptools)
@@ -157,7 +157,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1641603206
+export SOURCE_DATE_EPOCH=1643910303
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -188,7 +188,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 cd clr-build; make test
 
 %install
-export SOURCE_DATE_EPOCH=1641603206
+export SOURCE_DATE_EPOCH=1643910303
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/zeek
 cp %{_builddir}/zeek-4.0.4/COPYING %{buildroot}/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e

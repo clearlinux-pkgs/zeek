@@ -7,3 +7,4 @@ opencl-headers-dev
 pypi(pysubnettree)
 swig
 zlib-dev
+pypi(pybind11)
