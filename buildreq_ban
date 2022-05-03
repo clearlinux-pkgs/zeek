@@ -7,3 +7,4 @@ pypi(btest)
 pypi(cmake)
 pypi(ninja)
 pybind11-python3
+zeek-dev
