@@ -6,11 +6,11 @@
 #
 %define keepstatic 1
 Name     : zeek
-Version  : 4.0.6
-Release  : 9
-URL      : https://github.com/zeek/zeek/releases/download/v4.0.6/zeek-4.0.6.tar.gz
-Source0  : https://github.com/zeek/zeek/releases/download/v4.0.6/zeek-4.0.6.tar.gz
-Source1  : https://github.com/zeek/zeek/releases/download/v4.0.6/zeek-4.0.6.tar.gz.asc
+Version  : 4.0.7
+Release  : 10
+URL      : https://github.com/zeek/zeek/releases/download/v4.0.7/zeek-4.0.7.tar.gz
+Source0  : https://github.com/zeek/zeek/releases/download/v4.0.7/zeek-4.0.7.tar.gz
+Source1  : https://github.com/zeek/zeek/releases/download/v4.0.7/zeek-4.0.7.tar.gz.asc
 Summary  : A fast JSON parser/generator for C++ with both SAX/DOM style API
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-4.0 ISC MIT NCSA
@@ -147,8 +147,8 @@ staticdev components for the zeek package.
 
 
 %prep
-%setup -q -n zeek-4.0.6
-cd %{_builddir}/zeek-4.0.6
+%setup -q -n zeek-4.0.7
+cd %{_builddir}/zeek-4.0.7
 %patch1 -p1
 
 %build
@@ -160,7 +160,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1651601323
+export SOURCE_DATE_EPOCH=1654532889
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -191,49 +191,49 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 cd clr-build; make test
 
 %install
-export SOURCE_DATE_EPOCH=1651601323
+export SOURCE_DATE_EPOCH=1654532889
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/zeek
-cp %{_builddir}/zeek-4.0.6/COPYING %{buildroot}/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e
-cp %{_builddir}/zeek-4.0.6/auxil/bifcl/COPYING %{buildroot}/usr/share/package-licenses/zeek/095bff679080110031d9603cd5678de136085197
-cp %{_builddir}/zeek-4.0.6/auxil/bifcl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/binpac/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/binpac/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/broker/COPYING %{buildroot}/usr/share/package-licenses/zeek/3ab1c7ffea3eb25703969e96f8f4a62ba6e36345
-cp %{_builddir}/zeek-4.0.6/auxil/broker/bindings/python/3rdparty/pybind11/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3dbd61e2b2c71dcc658c3da90bacf2e15958075a
-cp %{_builddir}/zeek-4.0.6/auxil/broker/caf/LICENSE %{buildroot}/usr/share/package-licenses/zeek/19ac7c04124b9f0a00b4e827a58cd368feba7b4a
-cp %{_builddir}/zeek-4.0.6/auxil/broker/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/broker/tests/benchmark/readerwriterqueue/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/e85bbc8175bc6b4a99301cd29a2f05118656b547
-cp %{_builddir}/zeek-4.0.6/auxil/btest/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/highwayhash/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a7d7df655ba40478fae80a6abafc6afc36f9b6a
-cp %{_builddir}/zeek-4.0.6/auxil/libkqueue/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0e0c1a21672c002945447e502e1fdce6c032dc12
-cp %{_builddir}/zeek-4.0.6/auxil/libkqueue/pkg/debian/copyright %{buildroot}/usr/share/package-licenses/zeek/95b10a29e8110ff2823122f23729e173517a8a1e
-cp %{_builddir}/zeek-4.0.6/auxil/netcontrol-connectors/COPYING %{buildroot}/usr/share/package-licenses/zeek/7ba045683ca423eb9191e47cd13b80d9f8133d98
-cp %{_builddir}/zeek-4.0.6/auxil/package-manager/COPYING %{buildroot}/usr/share/package-licenses/zeek/1767b5180fbea2feaff4a90ecc7bd92effcf4458
-cp %{_builddir}/zeek-4.0.6/auxil/package-manager/doc/ext/sphinxarg/LICENSE %{buildroot}/usr/share/package-licenses/zeek/67de873c1e71bb7719e25d2209dc44bdfc755db4
-cp %{_builddir}/zeek-4.0.6/auxil/package-manager/testing/packages/rot13/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/133d0a39b5e2b6fe1640fdf72b961ba0fe78d348
-cp %{_builddir}/zeek-4.0.6/auxil/paraglob/COPYING %{buildroot}/usr/share/package-licenses/zeek/6ebb0617457eb1bea6f5d6a8f29129a22f0ac1a1
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/bin/jsonschema/LICENSE %{buildroot}/usr/share/package-licenses/zeek/6808b97edf6d2c189571af702b95916168ff7db8
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/contrib/natvis/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0c6ec50f76889bd113eacefe86f15b3dfcfb8e59
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/license.txt %{buildroot}/usr/share/package-licenses/zeek/47ab05791f28173ad2b82f25c2b5c7fc06252b4d
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/thirdparty/gtest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/thirdparty/gtest/googlemock/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/thirdparty/gtest/googlemock/scripts/generator/LICENSE %{buildroot}/usr/share/package-licenses/zeek/1d4719e04eaa4909ab5a59ef5cb04d2a5517716e
-cp %{_builddir}/zeek-4.0.6/auxil/rapidjson/thirdparty/gtest/googletest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
-cp %{_builddir}/zeek-4.0.6/auxil/zeek-archiver/LICENSE %{buildroot}/usr/share/package-licenses/zeek/b413d9daa4f9c131505362b204d278b0cde8c661
-cp %{_builddir}/zeek-4.0.6/auxil/zeek-aux/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/zeek-aux/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/zeek-aux/plugin-support/skeleton/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/38a91fe77596c51b40b5192189c1de2a1396e127
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/auxil/capstats/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/auxil/capstats/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/auxil/pysubnettree/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/auxil/pysubnettree/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/auxil/trace-summary/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/auxil/trace-summary/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/auxil/zeekctl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
-cp %{_builddir}/zeek-4.0.6/doc/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3d1626ff5f531f387f20f25b36500bbe1f960e3d
+cp %{_builddir}/zeek-4.0.7/COPYING %{buildroot}/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e
+cp %{_builddir}/zeek-4.0.7/auxil/bifcl/COPYING %{buildroot}/usr/share/package-licenses/zeek/095bff679080110031d9603cd5678de136085197
+cp %{_builddir}/zeek-4.0.7/auxil/bifcl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/binpac/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/binpac/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/broker/COPYING %{buildroot}/usr/share/package-licenses/zeek/3ab1c7ffea3eb25703969e96f8f4a62ba6e36345
+cp %{_builddir}/zeek-4.0.7/auxil/broker/bindings/python/3rdparty/pybind11/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3dbd61e2b2c71dcc658c3da90bacf2e15958075a
+cp %{_builddir}/zeek-4.0.7/auxil/broker/caf/LICENSE %{buildroot}/usr/share/package-licenses/zeek/19ac7c04124b9f0a00b4e827a58cd368feba7b4a
+cp %{_builddir}/zeek-4.0.7/auxil/broker/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/broker/tests/benchmark/readerwriterqueue/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/e85bbc8175bc6b4a99301cd29a2f05118656b547
+cp %{_builddir}/zeek-4.0.7/auxil/btest/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/highwayhash/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a7d7df655ba40478fae80a6abafc6afc36f9b6a
+cp %{_builddir}/zeek-4.0.7/auxil/libkqueue/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0e0c1a21672c002945447e502e1fdce6c032dc12
+cp %{_builddir}/zeek-4.0.7/auxil/libkqueue/pkg/debian/copyright %{buildroot}/usr/share/package-licenses/zeek/95b10a29e8110ff2823122f23729e173517a8a1e
+cp %{_builddir}/zeek-4.0.7/auxil/netcontrol-connectors/COPYING %{buildroot}/usr/share/package-licenses/zeek/7ba045683ca423eb9191e47cd13b80d9f8133d98
+cp %{_builddir}/zeek-4.0.7/auxil/package-manager/COPYING %{buildroot}/usr/share/package-licenses/zeek/1767b5180fbea2feaff4a90ecc7bd92effcf4458
+cp %{_builddir}/zeek-4.0.7/auxil/package-manager/doc/ext/sphinxarg/LICENSE %{buildroot}/usr/share/package-licenses/zeek/67de873c1e71bb7719e25d2209dc44bdfc755db4
+cp %{_builddir}/zeek-4.0.7/auxil/package-manager/testing/packages/rot13/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/133d0a39b5e2b6fe1640fdf72b961ba0fe78d348
+cp %{_builddir}/zeek-4.0.7/auxil/paraglob/COPYING %{buildroot}/usr/share/package-licenses/zeek/6ebb0617457eb1bea6f5d6a8f29129a22f0ac1a1
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/bin/jsonschema/LICENSE %{buildroot}/usr/share/package-licenses/zeek/6808b97edf6d2c189571af702b95916168ff7db8
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/contrib/natvis/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0c6ec50f76889bd113eacefe86f15b3dfcfb8e59
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/license.txt %{buildroot}/usr/share/package-licenses/zeek/47ab05791f28173ad2b82f25c2b5c7fc06252b4d
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/thirdparty/gtest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/thirdparty/gtest/googlemock/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/thirdparty/gtest/googlemock/scripts/generator/LICENSE %{buildroot}/usr/share/package-licenses/zeek/1d4719e04eaa4909ab5a59ef5cb04d2a5517716e
+cp %{_builddir}/zeek-4.0.7/auxil/rapidjson/thirdparty/gtest/googletest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+cp %{_builddir}/zeek-4.0.7/auxil/zeek-archiver/LICENSE %{buildroot}/usr/share/package-licenses/zeek/b413d9daa4f9c131505362b204d278b0cde8c661
+cp %{_builddir}/zeek-4.0.7/auxil/zeek-aux/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/zeek-aux/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/zeek-aux/plugin-support/skeleton/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/38a91fe77596c51b40b5192189c1de2a1396e127
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/auxil/capstats/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/auxil/capstats/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/auxil/pysubnettree/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/auxil/pysubnettree/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/auxil/trace-summary/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/auxil/trace-summary/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/auxil/zeekctl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-4.0.7/doc/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3d1626ff5f531f387f20f25b36500bbe1f960e3d
 pushd clr-build
 %make_install
 popd
