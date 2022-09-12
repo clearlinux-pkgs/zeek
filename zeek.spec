@@ -7,7 +7,7 @@
 %define keepstatic 1
 Name     : zeek
 Version  : 4.0.7
-Release  : 10
+Release  : 11
 URL      : https://github.com/zeek/zeek/releases/download/v4.0.7/zeek-4.0.7.tar.gz
 Source0  : https://github.com/zeek/zeek/releases/download/v4.0.7/zeek-4.0.7.tar.gz
 Source1  : https://github.com/zeek/zeek/releases/download/v4.0.7/zeek-4.0.7.tar.gz.asc
