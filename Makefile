@@ -1,5 +1,5 @@
 PKG_NAME := zeek
-URL = https://github.com/zeek/zeek/releases/download/v5.0.2/zeek-5.0.2.tar.gz
+URL = https://github.com/zeek/zeek/releases/download/v4.0.9/zeek-4.0.9.tar.gz
 ARCHIVES = 
 
 include ../common/Makefile.common

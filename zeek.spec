@@ -6,63 +6,152 @@
 #
 %define keepstatic 1
 Name     : zeek
-Version  : 5.0.2
-Release  : 13
-URL      : https://github.com/zeek/zeek/releases/download/v5.0.2/zeek-5.0.2.tar.gz
-Source0  : https://github.com/zeek/zeek/releases/download/v5.0.2/zeek-5.0.2.tar.gz
-Source1  : https://github.com/zeek/zeek/releases/download/v5.0.2/zeek-5.0.2.tar.gz.asc
+Version  : 4.0.9
+Release  : 14
+URL      : https://github.com/zeek/zeek/releases/download/v4.0.9/zeek-4.0.9.tar.gz
+Source0  : https://github.com/zeek/zeek/releases/download/v4.0.9/zeek-4.0.9.tar.gz
+Source1  : https://github.com/zeek/zeek/releases/download/v4.0.9/zeek-4.0.9.tar.gz.asc
 Summary  : A fast JSON parser/generator for C++ with both SAX/DOM style API
 Group    : Development/Tools
-License  : Apache-2.0 BSD-2-Clause BSD-3-Clause BSL-1.0 CC-BY-4.0 ISC LGPL-3.0 MIT NCSA
+License  : Apache-2.0 BSD-2-Clause BSD-3-Clause CC-BY-4.0 ISC MIT NCSA
+Requires: zeek-bin = %{version}-%{release}
+Requires: zeek-data = %{version}-%{release}
+Requires: zeek-lib = %{version}-%{release}
+Requires: zeek-license = %{version}-%{release}
+Requires: zeek-man = %{version}-%{release}
+Requires: zeek-python = %{version}-%{release}
+Requires: zeek-python3 = %{version}-%{release}
 Requires: pypi(pysubnettree)
 BuildRequires : bison
-BuildRequires : bison-dev
 BuildRequires : boost-dev
 BuildRequires : buildreq-cmake
 BuildRequires : buildreq-distutils3
-BuildRequires : buildreq-meson
 BuildRequires : curl-dev
 BuildRequires : doxygen
 BuildRequires : eigen-data
 BuildRequires : flex
-BuildRequires : git
 BuildRequires : glibc-dev
-BuildRequires : googletest-dev
+BuildRequires : krb5-dev
 BuildRequires : libpcap-dev
 BuildRequires : opencl-headers-dev
-BuildRequires : openmpi-dev
 BuildRequires : openssl-dev
-BuildRequires : pkg-config
-BuildRequires : pkgconfig(openssl)
 BuildRequires : protobuf-dev
-BuildRequires : pypi(absl_py)
 BuildRequires : pypi(gitpython)
-BuildRequires : pypi(numpy)
-BuildRequires : pypi(pandas)
 BuildRequires : pypi(pybind11)
 BuildRequires : pypi(pysubnettree)
-BuildRequires : pypi(scipy)
 BuildRequires : pypi(semantic_version)
 BuildRequires : pypi(setuptools)
 BuildRequires : pypi(sphinx)
 BuildRequires : pypi(sphinx_rtd_theme)
+BuildRequires : pypi(sphinxcontrib_napoleon)
 BuildRequires : pypi(wheel)
 BuildRequires : python3
 BuildRequires : python3-dev
-BuildRequires : qt6base-dev
+BuildRequires : qtbase-dev mesa-dev
 BuildRequires : swig
 BuildRequires : zlib-dev
 Patch1: 0001-Update-doctest-to-2.4.6.patch
+Patch2: 0002-pybind3.11-update-to-latest.patch
 
 %description
 =================================
 The Zeek Network Security Monitor
 =================================
 
+%package bin
+Summary: bin components for the zeek package.
+Group: Binaries
+Requires: zeek-data = %{version}-%{release}
+Requires: zeek-license = %{version}-%{release}
+
+%description bin
+bin components for the zeek package.
+
+
+%package data
+Summary: data components for the zeek package.
+Group: Data
+
+%description data
+data components for the zeek package.
+
+
+%package dev
+Summary: dev components for the zeek package.
+Group: Development
+Requires: zeek-lib = %{version}-%{release}
+Requires: zeek-bin = %{version}-%{release}
+Requires: zeek-data = %{version}-%{release}
+Provides: zeek-devel = %{version}-%{release}
+Requires: zeek = %{version}-%{release}
+
+%description dev
+dev components for the zeek package.
+
+
+%package lib
+Summary: lib components for the zeek package.
+Group: Libraries
+Requires: zeek-data = %{version}-%{release}
+Requires: zeek-license = %{version}-%{release}
+
+%description lib
+lib components for the zeek package.
+
+
+%package license
+Summary: license components for the zeek package.
+Group: Default
+
+%description license
+license components for the zeek package.
+
+
+%package man
+Summary: man components for the zeek package.
+Group: Default
+
+%description man
+man components for the zeek package.
+
+
+%package python
+Summary: python components for the zeek package.
+Group: Default
+Requires: zeek-python3 = %{version}-%{release}
+
+%description python
+python components for the zeek package.
+
+
+%package python3
+Summary: python3 components for the zeek package.
+Group: Default
+Requires: python3-core
+Requires: pypi(gitpython)
+Requires: pypi(semantic_version)
+Requires: pypi(sphinx)
+Requires: pypi(sphinx_rtd_theme)
+Requires: pypi(sphinxcontrib_napoleon)
+
+%description python3
+python3 components for the zeek package.
+
+
+%package staticdev
+Summary: staticdev components for the zeek package.
+Group: Default
+Requires: zeek-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the zeek package.
+
+
 %prep
-%setup -q -n zeek-5.0.2
-cd %{_builddir}/zeek-5.0.2
+%setup -q -n zeek-4.0.9
+cd %{_builddir}/zeek-4.0.9
 %patch1 -p1
+%patch2 -p1
 
 %build
 ## build_prepend content
@@ -73,7 +162,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1666639564
+export SOURCE_DATE_EPOCH=1666741444
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -104,71 +193,49 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 cd clr-build; make test
 
 %install
-export SOURCE_DATE_EPOCH=1666639564
+export SOURCE_DATE_EPOCH=1666741444
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/zeek
-cp %{_builddir}/zeek-%{version}/COPYING %{buildroot}/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e || :
-cp %{_builddir}/zeek-%{version}/COPYING.3rdparty %{buildroot}/usr/share/package-licenses/zeek/e321fe856142eac73512b559b2c823d2e8d8e832 || :
-cp %{_builddir}/zeek-%{version}/auxil/bifcl/COPYING %{buildroot}/usr/share/package-licenses/zeek/095bff679080110031d9603cd5678de136085197 || :
-cp %{_builddir}/zeek-%{version}/auxil/bifcl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/binpac/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/binpac/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/broker/COPYING %{buildroot}/usr/share/package-licenses/zeek/3ab1c7ffea3eb25703969e96f8f4a62ba6e36345 || :
-cp %{_builddir}/zeek-%{version}/auxil/broker/bindings/python/3rdparty/pybind11/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3dbd61e2b2c71dcc658c3da90bacf2e15958075a || :
-cp %{_builddir}/zeek-%{version}/auxil/broker/caf-incubator/LICENSE %{buildroot}/usr/share/package-licenses/zeek/19ac7c04124b9f0a00b4e827a58cd368feba7b4a || :
-cp %{_builddir}/zeek-%{version}/auxil/broker/caf/LICENSE %{buildroot}/usr/share/package-licenses/zeek/19ac7c04124b9f0a00b4e827a58cd368feba7b4a || :
-cp %{_builddir}/zeek-%{version}/auxil/broker/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/broker/tests/benchmark/readerwriterqueue/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/e85bbc8175bc6b4a99301cd29a2f05118656b547 || :
-cp %{_builddir}/zeek-%{version}/auxil/btest/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/c-ares/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/e9c597f9b6cf935773ee731d4170b0c2ba142dbb || :
-cp %{_builddir}/zeek-%{version}/auxil/gen-zam/COPYING %{buildroot}/usr/share/package-licenses/zeek/b471afe66ee4401fd4bdcb7a201255e80e122c72 || :
-cp %{_builddir}/zeek-%{version}/auxil/gen-zam/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/highwayhash/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a7d7df655ba40478fae80a6abafc6afc36f9b6a || :
-cp %{_builddir}/zeek-%{version}/auxil/libkqueue/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0e0c1a21672c002945447e502e1fdce6c032dc12 || :
-cp %{_builddir}/zeek-%{version}/auxil/libkqueue/pkg/debian/copyright %{buildroot}/usr/share/package-licenses/zeek/95b10a29e8110ff2823122f23729e173517a8a1e || :
-cp %{_builddir}/zeek-%{version}/auxil/netcontrol-connectors/COPYING %{buildroot}/usr/share/package-licenses/zeek/7ba045683ca423eb9191e47cd13b80d9f8133d98 || :
-cp %{_builddir}/zeek-%{version}/auxil/out_ptr/LICENSE %{buildroot}/usr/share/package-licenses/zeek/bbfec3dc6c195eae61bb0acb0c3e049a229341b0 || :
-cp %{_builddir}/zeek-%{version}/auxil/package-manager/COPYING %{buildroot}/usr/share/package-licenses/zeek/1767b5180fbea2feaff4a90ecc7bd92effcf4458 || :
-cp %{_builddir}/zeek-%{version}/auxil/package-manager/doc/ext/sphinxarg/LICENSE %{buildroot}/usr/share/package-licenses/zeek/67de873c1e71bb7719e25d2209dc44bdfc755db4 || :
-cp %{_builddir}/zeek-%{version}/auxil/package-manager/testing/packages/rot13/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/133d0a39b5e2b6fe1640fdf72b961ba0fe78d348 || :
-cp %{_builddir}/zeek-%{version}/auxil/paraglob/COPYING %{buildroot}/usr/share/package-licenses/zeek/6ebb0617457eb1bea6f5d6a8f29129a22f0ac1a1 || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/bin/jsonschema/LICENSE %{buildroot}/usr/share/package-licenses/zeek/6808b97edf6d2c189571af702b95916168ff7db8 || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/contrib/natvis/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0c6ec50f76889bd113eacefe86f15b3dfcfb8e59 || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/license.txt %{buildroot}/usr/share/package-licenses/zeek/47ab05791f28173ad2b82f25c2b5c7fc06252b4d || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304 || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/googlemock/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304 || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/googlemock/scripts/generator/LICENSE %{buildroot}/usr/share/package-licenses/zeek/1d4719e04eaa4909ab5a59ef5cb04d2a5517716e || :
-cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/googletest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy-plugin/LICENSE %{buildroot}/usr/share/package-licenses/zeek/1b7fe0f0883efca8bce84c7c38473d61ff32f5b9 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/ArticleEnumClass-v2/LICENSE %{buildroot}/usr/share/package-licenses/zeek/d2057f161cc376853934a0258f672cb85f704120 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/LICENSE.3rdparty %{buildroot}/usr/share/package-licenses/zeek/0d64006ae04c72edc619d13f3954c63a01b1bf2a || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/SafeInt/LICENSE %{buildroot}/usr/share/package-licenses/zeek/ca889c1e7f43a2306d28e5b479037f70ac544753 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/any/LICENSE_1_0.txt %{buildroot}/usr/share/package-licenses/zeek/3cba29011be2b9d59f6204d6fa0a386b1b2dbd90 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/benchmark/LICENSE %{buildroot}/usr/share/package-licenses/zeek/2b8b815229aa8a61e483fb4ba0588b8b6c491890 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/doctest/LICENSE.txt %{buildroot}/usr/share/package-licenses/zeek/0894759b39fd4d199a2909db23855f861ac4b6fd || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/fiber/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/bb716b1beccc5eed90344b63f121554f7184a9c0 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/fiber/cmake/cmake-utils/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/bb716b1beccc5eed90344b63f121554f7184a9c0 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/fiber/deps/cxx-header-utils/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/bb716b1beccc5eed90344b63f121554f7184a9c0 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/filesystem/LICENSE %{buildroot}/usr/share/package-licenses/zeek/fb35a530cb1bb57a2cfe303bf68bb6ce4a404fb0 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/json/LICENSE.MIT %{buildroot}/usr/share/package-licenses/zeek/5aa6321f397c4409e3f8f6e26481aab583dccdf8 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/pathfind/LICENSE %{buildroot}/usr/share/package-licenses/zeek/f45ee1c765646813b442ca58de72e20a64a7ddba || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/reproc/LICENSE %{buildroot}/usr/share/package-licenses/zeek/7b04f5db0169eff3fa319fcc887aea1e903e6796 || :
-cp %{_builddir}/zeek-%{version}/auxil/spicy/spicy/3rdparty/utf8proc/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/2e869637fb9ebe989de0188665cdd73c3cdb2b40 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeek-archiver/LICENSE %{buildroot}/usr/share/package-licenses/zeek/b413d9daa4f9c131505362b204d278b0cde8c661 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeek-aux/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeek-aux/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeek-aux/plugin-support/skeleton/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/38a91fe77596c51b40b5192189c1de2a1396e127 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeek-client/LICENSE %{buildroot}/usr/share/package-licenses/zeek/e600b5317265eaee96efec3a5cdefa5cdcfa25c8 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/capstats/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/capstats/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/pysubnettree/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/pysubnettree/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/trace-summary/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/trace-summary/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/auxil/zeekctl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5 || :
-cp %{_builddir}/zeek-%{version}/doc/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3d1626ff5f531f387f20f25b36500bbe1f960e3d || :
+cp %{_builddir}/zeek-%{version}/COPYING %{buildroot}/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e
+cp %{_builddir}/zeek-%{version}/auxil/bifcl/COPYING %{buildroot}/usr/share/package-licenses/zeek/095bff679080110031d9603cd5678de136085197
+cp %{_builddir}/zeek-%{version}/auxil/bifcl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/binpac/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/binpac/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/broker/COPYING %{buildroot}/usr/share/package-licenses/zeek/3ab1c7ffea3eb25703969e96f8f4a62ba6e36345
+cp %{_builddir}/zeek-%{version}/auxil/broker/bindings/python/3rdparty/pybind11/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3dbd61e2b2c71dcc658c3da90bacf2e15958075a
+cp %{_builddir}/zeek-%{version}/auxil/broker/caf/LICENSE %{buildroot}/usr/share/package-licenses/zeek/19ac7c04124b9f0a00b4e827a58cd368feba7b4a
+cp %{_builddir}/zeek-%{version}/auxil/broker/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/broker/tests/benchmark/readerwriterqueue/LICENSE.md %{buildroot}/usr/share/package-licenses/zeek/e85bbc8175bc6b4a99301cd29a2f05118656b547
+cp %{_builddir}/zeek-%{version}/auxil/btest/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/highwayhash/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a7d7df655ba40478fae80a6abafc6afc36f9b6a
+cp %{_builddir}/zeek-%{version}/auxil/libkqueue/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0e0c1a21672c002945447e502e1fdce6c032dc12
+cp %{_builddir}/zeek-%{version}/auxil/libkqueue/pkg/debian/copyright %{buildroot}/usr/share/package-licenses/zeek/95b10a29e8110ff2823122f23729e173517a8a1e
+cp %{_builddir}/zeek-%{version}/auxil/netcontrol-connectors/COPYING %{buildroot}/usr/share/package-licenses/zeek/7ba045683ca423eb9191e47cd13b80d9f8133d98
+cp %{_builddir}/zeek-%{version}/auxil/package-manager/COPYING %{buildroot}/usr/share/package-licenses/zeek/1767b5180fbea2feaff4a90ecc7bd92effcf4458
+cp %{_builddir}/zeek-%{version}/auxil/package-manager/doc/ext/sphinxarg/LICENSE %{buildroot}/usr/share/package-licenses/zeek/67de873c1e71bb7719e25d2209dc44bdfc755db4
+cp %{_builddir}/zeek-%{version}/auxil/package-manager/testing/packages/rot13/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/133d0a39b5e2b6fe1640fdf72b961ba0fe78d348
+cp %{_builddir}/zeek-%{version}/auxil/paraglob/COPYING %{buildroot}/usr/share/package-licenses/zeek/6ebb0617457eb1bea6f5d6a8f29129a22f0ac1a1
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/bin/jsonschema/LICENSE %{buildroot}/usr/share/package-licenses/zeek/6808b97edf6d2c189571af702b95916168ff7db8
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/contrib/natvis/LICENSE %{buildroot}/usr/share/package-licenses/zeek/0c6ec50f76889bd113eacefe86f15b3dfcfb8e59
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/license.txt %{buildroot}/usr/share/package-licenses/zeek/47ab05791f28173ad2b82f25c2b5c7fc06252b4d
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/googlemock/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/googlemock/scripts/generator/LICENSE %{buildroot}/usr/share/package-licenses/zeek/1d4719e04eaa4909ab5a59ef5cb04d2a5517716e
+cp %{_builddir}/zeek-%{version}/auxil/rapidjson/thirdparty/gtest/googletest/LICENSE %{buildroot}/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+cp %{_builddir}/zeek-%{version}/auxil/zeek-archiver/LICENSE %{buildroot}/usr/share/package-licenses/zeek/b413d9daa4f9c131505362b204d278b0cde8c661
+cp %{_builddir}/zeek-%{version}/auxil/zeek-aux/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/zeek-aux/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/zeek-aux/plugin-support/skeleton/COPYING.edit-me %{buildroot}/usr/share/package-licenses/zeek/38a91fe77596c51b40b5192189c1de2a1396e127
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/capstats/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/capstats/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/pysubnettree/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/pysubnettree/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/trace-summary/COPYING %{buildroot}/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/auxil/trace-summary/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/auxil/zeekctl/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/cmake/COPYING %{buildroot}/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+cp %{_builddir}/zeek-%{version}/doc/LICENSE %{buildroot}/usr/share/package-licenses/zeek/3d1626ff5f531f387f20f25b36500bbe1f960e3d
 pushd clr-build
 %make_install
 popd
@@ -177,3 +244,1982 @@ rm -f %{buildroot}*/var/spool/zeek/zeekctl-config.sh
 
 %files
 %defattr(-,root,root,-)
+/usr/lib64/broctl
+
+%files bin
+%defattr(-,root,root,-)
+/usr/bin/bifcl
+/usr/bin/binpac
+/usr/bin/bro
+/usr/bin/bro-config
+/usr/bin/broctl
+/usr/bin/broker-benchmark
+/usr/bin/broker-cluster-benchmark
+/usr/bin/capstats
+/usr/bin/paraglob-test
+/usr/bin/trace-summary
+/usr/bin/zeek
+/usr/bin/zeek-config
+/usr/bin/zeek-wrapper
+/usr/bin/zeekctl
+
+%files data
+%defattr(-,root,root,-)
+/usr/share/zeek/base/bif/__load__.zeek
+/usr/share/zeek/base/bif/analyzer.bif.zeek
+/usr/share/zeek/base/bif/bloom-filter.bif.zeek
+/usr/share/zeek/base/bif/cardinality-counter.bif.zeek
+/usr/share/zeek/base/bif/comm.bif.zeek
+/usr/share/zeek/base/bif/const.bif.zeek
+/usr/share/zeek/base/bif/data.bif.zeek
+/usr/share/zeek/base/bif/event.bif.zeek
+/usr/share/zeek/base/bif/file_analysis.bif.zeek
+/usr/share/zeek/base/bif/input.bif.zeek
+/usr/share/zeek/base/bif/logging.bif.zeek
+/usr/share/zeek/base/bif/messaging.bif.zeek
+/usr/share/zeek/base/bif/option.bif.zeek
+/usr/share/zeek/base/bif/packet_analysis.bif.zeek
+/usr/share/zeek/base/bif/pcap.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_ARP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_AsciiReader.ascii.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_AsciiWriter.ascii.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_BenchmarkReader.benchmark.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_BinaryReader.binary.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_BitTorrent.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_ConfigReader.config.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_ConnSize.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_ConnSize.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DCE_RPC.consts.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DCE_RPC.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DCE_RPC.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DHCP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DHCP.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DNP3.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_DNS.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_FTP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_FTP.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_File.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_FileEntropy.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_FileExtract.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_FileExtract.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_FileHash.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Finger.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_GSSAPI.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_GTPv1.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Gnutella.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_HTTP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_HTTP.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_ICMP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_IMAP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_IRC.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Ident.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_KRB.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_KRB.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Login.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Login.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_MIME.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_MQTT.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_MQTT.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Modbus.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_MySQL.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NCP.consts.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NCP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NTLM.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NTLM.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NTP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NTP.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NetBIOS.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NetBIOS.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_NoneWriter.none.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_PE.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_POP3.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_RADIUS.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_RDP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_RDP.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_RFB.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_RPC.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_RawReader.raw.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SIP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.consts.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_check_directory.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_close.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_create_directory.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_echo.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_logoff_andx.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_negotiate.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_nt_cancel.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_nt_create_andx.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_query_information.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_read_andx.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_session_setup_andx.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_transaction.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_transaction2.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_transaction2_secondary.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_transaction_secondary.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_tree_connect_andx.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_tree_disconnect.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_com_write_andx.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb1_events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_close.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_create.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_negotiate.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_read.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_session_setup.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_set_info.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_transform_header.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_tree_connect.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_tree_disconnect.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_com_write.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.smb2_events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMB.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMTP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SMTP.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SNMP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SNMP.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SOCKS.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SQLiteReader.sqlite.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SQLiteWriter.sqlite.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SSH.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SSH.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SSL.consts.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SSL.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SSL.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SSL.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_SteppingStone.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Syslog.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_TCP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_TCP.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_TCP.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Teredo.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_UDP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Unified2.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_Unified2.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_VXLAN.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_X509.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_X509.functions.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_X509.ocsp_events.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_X509.types.bif.zeek
+/usr/share/zeek/base/bif/plugins/Zeek_XMPP.events.bif.zeek
+/usr/share/zeek/base/bif/plugins/__load__.zeek
+/usr/share/zeek/base/bif/reporter.bif.zeek
+/usr/share/zeek/base/bif/stats.bif.zeek
+/usr/share/zeek/base/bif/store.bif.zeek
+/usr/share/zeek/base/bif/strings.bif.zeek
+/usr/share/zeek/base/bif/supervisor.bif.zeek
+/usr/share/zeek/base/bif/top-k.bif.zeek
+/usr/share/zeek/base/bif/types.bif.zeek
+/usr/share/zeek/base/bif/zeek.bif.zeek
+/usr/share/zeek/base/bif/zeekygen.bif.zeek
+/usr/share/zeek/base/files/extract/__load__.zeek
+/usr/share/zeek/base/files/extract/main.zeek
+/usr/share/zeek/base/files/hash/__load__.zeek
+/usr/share/zeek/base/files/hash/main.zeek
+/usr/share/zeek/base/files/pe/__load__.zeek
+/usr/share/zeek/base/files/pe/consts.zeek
+/usr/share/zeek/base/files/pe/main.zeek
+/usr/share/zeek/base/files/x509/__load__.zeek
+/usr/share/zeek/base/files/x509/main.zeek
+/usr/share/zeek/base/frameworks/analyzer/__load__.zeek
+/usr/share/zeek/base/frameworks/analyzer/main.zeek
+/usr/share/zeek/base/frameworks/broker/__load__.zeek
+/usr/share/zeek/base/frameworks/broker/log.zeek
+/usr/share/zeek/base/frameworks/broker/main.zeek
+/usr/share/zeek/base/frameworks/broker/store.zeek
+/usr/share/zeek/base/frameworks/cluster/__load__.zeek
+/usr/share/zeek/base/frameworks/cluster/broker-stores.zeek
+/usr/share/zeek/base/frameworks/cluster/main.zeek
+/usr/share/zeek/base/frameworks/cluster/nodes/logger.zeek
+/usr/share/zeek/base/frameworks/cluster/nodes/manager.zeek
+/usr/share/zeek/base/frameworks/cluster/nodes/proxy.zeek
+/usr/share/zeek/base/frameworks/cluster/nodes/worker.zeek
+/usr/share/zeek/base/frameworks/cluster/pools.zeek
+/usr/share/zeek/base/frameworks/cluster/setup-connections.zeek
+/usr/share/zeek/base/frameworks/config/__load__.zeek
+/usr/share/zeek/base/frameworks/config/input.zeek
+/usr/share/zeek/base/frameworks/config/main.zeek
+/usr/share/zeek/base/frameworks/config/weird.zeek
+/usr/share/zeek/base/frameworks/control/__load__.zeek
+/usr/share/zeek/base/frameworks/control/main.zeek
+/usr/share/zeek/base/frameworks/dpd/__load__.zeek
+/usr/share/zeek/base/frameworks/dpd/main.zeek
+/usr/share/zeek/base/frameworks/files/__load__.zeek
+/usr/share/zeek/base/frameworks/files/magic/__load__.zeek
+/usr/share/zeek/base/frameworks/files/magic/archive.sig
+/usr/share/zeek/base/frameworks/files/magic/audio.sig
+/usr/share/zeek/base/frameworks/files/magic/executable.sig
+/usr/share/zeek/base/frameworks/files/magic/font.sig
+/usr/share/zeek/base/frameworks/files/magic/general.sig
+/usr/share/zeek/base/frameworks/files/magic/image.sig
+/usr/share/zeek/base/frameworks/files/magic/java.sig
+/usr/share/zeek/base/frameworks/files/magic/libmagic.sig
+/usr/share/zeek/base/frameworks/files/magic/office.sig
+/usr/share/zeek/base/frameworks/files/magic/programming.sig
+/usr/share/zeek/base/frameworks/files/magic/video.sig
+/usr/share/zeek/base/frameworks/files/main.zeek
+/usr/share/zeek/base/frameworks/input/__load__.zeek
+/usr/share/zeek/base/frameworks/input/main.zeek
+/usr/share/zeek/base/frameworks/input/readers/ascii.zeek
+/usr/share/zeek/base/frameworks/input/readers/benchmark.zeek
+/usr/share/zeek/base/frameworks/input/readers/binary.zeek
+/usr/share/zeek/base/frameworks/input/readers/config.zeek
+/usr/share/zeek/base/frameworks/input/readers/raw.zeek
+/usr/share/zeek/base/frameworks/input/readers/sqlite.zeek
+/usr/share/zeek/base/frameworks/intel/__load__.zeek
+/usr/share/zeek/base/frameworks/intel/cluster.zeek
+/usr/share/zeek/base/frameworks/intel/files.zeek
+/usr/share/zeek/base/frameworks/intel/input.zeek
+/usr/share/zeek/base/frameworks/intel/main.zeek
+/usr/share/zeek/base/frameworks/logging/__load__.zeek
+/usr/share/zeek/base/frameworks/logging/main.zeek
+/usr/share/zeek/base/frameworks/logging/postprocessors/__load__.zeek
+/usr/share/zeek/base/frameworks/logging/postprocessors/scp.zeek
+/usr/share/zeek/base/frameworks/logging/postprocessors/sftp.zeek
+/usr/share/zeek/base/frameworks/logging/writers/ascii.zeek
+/usr/share/zeek/base/frameworks/logging/writers/none.zeek
+/usr/share/zeek/base/frameworks/logging/writers/sqlite.zeek
+/usr/share/zeek/base/frameworks/netcontrol/__load__.zeek
+/usr/share/zeek/base/frameworks/netcontrol/cluster.zeek
+/usr/share/zeek/base/frameworks/netcontrol/drop.zeek
+/usr/share/zeek/base/frameworks/netcontrol/main.zeek
+/usr/share/zeek/base/frameworks/netcontrol/non-cluster.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugin.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugins/__load__.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugins/acld.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugins/broker.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugins/debug.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugins/openflow.zeek
+/usr/share/zeek/base/frameworks/netcontrol/plugins/packetfilter.zeek
+/usr/share/zeek/base/frameworks/netcontrol/shunt.zeek
+/usr/share/zeek/base/frameworks/netcontrol/types.zeek
+/usr/share/zeek/base/frameworks/notice/__load__.zeek
+/usr/share/zeek/base/frameworks/notice/actions/add-geodata.zeek
+/usr/share/zeek/base/frameworks/notice/actions/email_admin.zeek
+/usr/share/zeek/base/frameworks/notice/actions/page.zeek
+/usr/share/zeek/base/frameworks/notice/actions/pp-alarms.zeek
+/usr/share/zeek/base/frameworks/notice/main.zeek
+/usr/share/zeek/base/frameworks/notice/weird.zeek
+/usr/share/zeek/base/frameworks/openflow/__load__.zeek
+/usr/share/zeek/base/frameworks/openflow/cluster.zeek
+/usr/share/zeek/base/frameworks/openflow/consts.zeek
+/usr/share/zeek/base/frameworks/openflow/main.zeek
+/usr/share/zeek/base/frameworks/openflow/non-cluster.zeek
+/usr/share/zeek/base/frameworks/openflow/plugins/__load__.zeek
+/usr/share/zeek/base/frameworks/openflow/plugins/broker.zeek
+/usr/share/zeek/base/frameworks/openflow/plugins/log.zeek
+/usr/share/zeek/base/frameworks/openflow/plugins/ryu.zeek
+/usr/share/zeek/base/frameworks/openflow/types.zeek
+/usr/share/zeek/base/frameworks/packet-filter/__load__.zeek
+/usr/share/zeek/base/frameworks/packet-filter/cluster.zeek
+/usr/share/zeek/base/frameworks/packet-filter/main.zeek
+/usr/share/zeek/base/frameworks/packet-filter/netstats.zeek
+/usr/share/zeek/base/frameworks/packet-filter/utils.zeek
+/usr/share/zeek/base/frameworks/reporter/__load__.zeek
+/usr/share/zeek/base/frameworks/reporter/main.zeek
+/usr/share/zeek/base/frameworks/signatures/__load__.zeek
+/usr/share/zeek/base/frameworks/signatures/main.zeek
+/usr/share/zeek/base/frameworks/software/__load__.zeek
+/usr/share/zeek/base/frameworks/software/main.zeek
+/usr/share/zeek/base/frameworks/sumstats/__load__.zeek
+/usr/share/zeek/base/frameworks/sumstats/cluster.zeek
+/usr/share/zeek/base/frameworks/sumstats/main.zeek
+/usr/share/zeek/base/frameworks/sumstats/non-cluster.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/__load__.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/average.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/hll_unique.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/last.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/max.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/min.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/sample.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/std-dev.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/sum.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/topk.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/unique.zeek
+/usr/share/zeek/base/frameworks/sumstats/plugins/variance.zeek
+/usr/share/zeek/base/frameworks/supervisor/__load__.zeek
+/usr/share/zeek/base/frameworks/supervisor/api.zeek
+/usr/share/zeek/base/frameworks/supervisor/control.zeek
+/usr/share/zeek/base/frameworks/supervisor/main.zeek
+/usr/share/zeek/base/frameworks/tunnels/__load__.zeek
+/usr/share/zeek/base/frameworks/tunnels/main.zeek
+/usr/share/zeek/base/init-bare.zeek
+/usr/share/zeek/base/init-default.zeek
+/usr/share/zeek/base/init-frameworks-and-bifs.zeek
+/usr/share/zeek/base/misc/find-checksum-offloading.zeek
+/usr/share/zeek/base/misc/find-filtered-trace.zeek
+/usr/share/zeek/base/misc/version.zeek
+/usr/share/zeek/base/packet-protocols/__load__.zeek
+/usr/share/zeek/base/packet-protocols/ethernet/__load__.zeek
+/usr/share/zeek/base/packet-protocols/ethernet/main.zeek
+/usr/share/zeek/base/packet-protocols/fddi/__load__.zeek
+/usr/share/zeek/base/packet-protocols/fddi/main.zeek
+/usr/share/zeek/base/packet-protocols/gre/__load__.zeek
+/usr/share/zeek/base/packet-protocols/gre/main.zeek
+/usr/share/zeek/base/packet-protocols/ieee802_11/__load__.zeek
+/usr/share/zeek/base/packet-protocols/ieee802_11/main.zeek
+/usr/share/zeek/base/packet-protocols/ieee802_11_radio/__load__.zeek
+/usr/share/zeek/base/packet-protocols/ieee802_11_radio/main.zeek
+/usr/share/zeek/base/packet-protocols/ip/__load__.zeek
+/usr/share/zeek/base/packet-protocols/ip/main.zeek
+/usr/share/zeek/base/packet-protocols/iptunnel/__load__.zeek
+/usr/share/zeek/base/packet-protocols/iptunnel/main.zeek
+/usr/share/zeek/base/packet-protocols/linux_sll/__load__.zeek
+/usr/share/zeek/base/packet-protocols/linux_sll/main.zeek
+/usr/share/zeek/base/packet-protocols/mpls/__load__.zeek
+/usr/share/zeek/base/packet-protocols/mpls/main.zeek
+/usr/share/zeek/base/packet-protocols/nflog/__load__.zeek
+/usr/share/zeek/base/packet-protocols/nflog/main.zeek
+/usr/share/zeek/base/packet-protocols/null/__load__.zeek
+/usr/share/zeek/base/packet-protocols/null/main.zeek
+/usr/share/zeek/base/packet-protocols/ppp_serial/__load__.zeek
+/usr/share/zeek/base/packet-protocols/ppp_serial/main.zeek
+/usr/share/zeek/base/packet-protocols/pppoe/__load__.zeek
+/usr/share/zeek/base/packet-protocols/pppoe/main.zeek
+/usr/share/zeek/base/packet-protocols/root/__load__.zeek
+/usr/share/zeek/base/packet-protocols/root/main.zeek
+/usr/share/zeek/base/packet-protocols/skip/__load__.zeek
+/usr/share/zeek/base/packet-protocols/skip/main.zeek
+/usr/share/zeek/base/packet-protocols/vlan/__load__.zeek
+/usr/share/zeek/base/packet-protocols/vlan/main.zeek
+/usr/share/zeek/base/protocols/conn/__load__.zeek
+/usr/share/zeek/base/protocols/conn/contents.zeek
+/usr/share/zeek/base/protocols/conn/inactivity.zeek
+/usr/share/zeek/base/protocols/conn/main.zeek
+/usr/share/zeek/base/protocols/conn/polling.zeek
+/usr/share/zeek/base/protocols/conn/removal-hooks.zeek
+/usr/share/zeek/base/protocols/conn/thresholds.zeek
+/usr/share/zeek/base/protocols/dce-rpc/__load__.zeek
+/usr/share/zeek/base/protocols/dce-rpc/consts.zeek
+/usr/share/zeek/base/protocols/dce-rpc/dpd.sig
+/usr/share/zeek/base/protocols/dce-rpc/main.zeek
+/usr/share/zeek/base/protocols/dhcp/__load__.zeek
+/usr/share/zeek/base/protocols/dhcp/consts.zeek
+/usr/share/zeek/base/protocols/dhcp/dpd.sig
+/usr/share/zeek/base/protocols/dhcp/main.zeek
+/usr/share/zeek/base/protocols/dnp3/__load__.zeek
+/usr/share/zeek/base/protocols/dnp3/consts.zeek
+/usr/share/zeek/base/protocols/dnp3/dpd.sig
+/usr/share/zeek/base/protocols/dnp3/main.zeek
+/usr/share/zeek/base/protocols/dns/__load__.zeek
+/usr/share/zeek/base/protocols/dns/consts.zeek
+/usr/share/zeek/base/protocols/dns/main.zeek
+/usr/share/zeek/base/protocols/ftp/__load__.zeek
+/usr/share/zeek/base/protocols/ftp/dpd.sig
+/usr/share/zeek/base/protocols/ftp/files.zeek
+/usr/share/zeek/base/protocols/ftp/gridftp.zeek
+/usr/share/zeek/base/protocols/ftp/info.zeek
+/usr/share/zeek/base/protocols/ftp/main.zeek
+/usr/share/zeek/base/protocols/ftp/utils-commands.zeek
+/usr/share/zeek/base/protocols/ftp/utils.zeek
+/usr/share/zeek/base/protocols/http/__load__.zeek
+/usr/share/zeek/base/protocols/http/dpd.sig
+/usr/share/zeek/base/protocols/http/entities.zeek
+/usr/share/zeek/base/protocols/http/files.zeek
+/usr/share/zeek/base/protocols/http/main.zeek
+/usr/share/zeek/base/protocols/http/utils.zeek
+/usr/share/zeek/base/protocols/imap/__load__.zeek
+/usr/share/zeek/base/protocols/imap/main.zeek
+/usr/share/zeek/base/protocols/irc/__load__.zeek
+/usr/share/zeek/base/protocols/irc/dcc-send.zeek
+/usr/share/zeek/base/protocols/irc/dpd.sig
+/usr/share/zeek/base/protocols/irc/files.zeek
+/usr/share/zeek/base/protocols/irc/main.zeek
+/usr/share/zeek/base/protocols/krb/__load__.zeek
+/usr/share/zeek/base/protocols/krb/consts.zeek
+/usr/share/zeek/base/protocols/krb/dpd.sig
+/usr/share/zeek/base/protocols/krb/files.zeek
+/usr/share/zeek/base/protocols/krb/main.zeek
+/usr/share/zeek/base/protocols/modbus/__load__.zeek
+/usr/share/zeek/base/protocols/modbus/consts.zeek
+/usr/share/zeek/base/protocols/modbus/main.zeek
+/usr/share/zeek/base/protocols/mqtt/__load__.zeek
+/usr/share/zeek/base/protocols/mqtt/consts.zeek
+/usr/share/zeek/base/protocols/mysql/__load__.zeek
+/usr/share/zeek/base/protocols/mysql/consts.zeek
+/usr/share/zeek/base/protocols/mysql/main.zeek
+/usr/share/zeek/base/protocols/ntlm/__load__.zeek
+/usr/share/zeek/base/protocols/ntlm/main.zeek
+/usr/share/zeek/base/protocols/ntp/__load__.zeek
+/usr/share/zeek/base/protocols/ntp/consts.zeek
+/usr/share/zeek/base/protocols/ntp/main.zeek
+/usr/share/zeek/base/protocols/pop3/__load__.zeek
+/usr/share/zeek/base/protocols/pop3/dpd.sig
+/usr/share/zeek/base/protocols/radius/__load__.zeek
+/usr/share/zeek/base/protocols/radius/consts.zeek
+/usr/share/zeek/base/protocols/radius/main.zeek
+/usr/share/zeek/base/protocols/rdp/__load__.zeek
+/usr/share/zeek/base/protocols/rdp/consts.zeek
+/usr/share/zeek/base/protocols/rdp/dpd.sig
+/usr/share/zeek/base/protocols/rdp/main.zeek
+/usr/share/zeek/base/protocols/rfb/__load__.zeek
+/usr/share/zeek/base/protocols/rfb/dpd.sig
+/usr/share/zeek/base/protocols/rfb/main.zeek
+/usr/share/zeek/base/protocols/sip/__load__.zeek
+/usr/share/zeek/base/protocols/sip/dpd.sig
+/usr/share/zeek/base/protocols/sip/main.zeek
+/usr/share/zeek/base/protocols/smb/__load__.zeek
+/usr/share/zeek/base/protocols/smb/const-dos-error.zeek
+/usr/share/zeek/base/protocols/smb/const-nt-status.zeek
+/usr/share/zeek/base/protocols/smb/consts.zeek
+/usr/share/zeek/base/protocols/smb/dpd.sig
+/usr/share/zeek/base/protocols/smb/files.zeek
+/usr/share/zeek/base/protocols/smb/main.zeek
+/usr/share/zeek/base/protocols/smb/smb1-main.zeek
+/usr/share/zeek/base/protocols/smb/smb2-main.zeek
+/usr/share/zeek/base/protocols/smtp/__load__.zeek
+/usr/share/zeek/base/protocols/smtp/dpd.sig
+/usr/share/zeek/base/protocols/smtp/entities.zeek
+/usr/share/zeek/base/protocols/smtp/files.zeek
+/usr/share/zeek/base/protocols/smtp/main.zeek
+/usr/share/zeek/base/protocols/snmp/__load__.zeek
+/usr/share/zeek/base/protocols/snmp/main.zeek
+/usr/share/zeek/base/protocols/socks/__load__.zeek
+/usr/share/zeek/base/protocols/socks/consts.zeek
+/usr/share/zeek/base/protocols/socks/dpd.sig
+/usr/share/zeek/base/protocols/socks/main.zeek
+/usr/share/zeek/base/protocols/ssh/__load__.zeek
+/usr/share/zeek/base/protocols/ssh/dpd.sig
+/usr/share/zeek/base/protocols/ssh/main.zeek
+/usr/share/zeek/base/protocols/ssl/__load__.zeek
+/usr/share/zeek/base/protocols/ssl/consts.zeek
+/usr/share/zeek/base/protocols/ssl/ct-list.zeek
+/usr/share/zeek/base/protocols/ssl/dpd.sig
+/usr/share/zeek/base/protocols/ssl/files.zeek
+/usr/share/zeek/base/protocols/ssl/main.zeek
+/usr/share/zeek/base/protocols/ssl/mozilla-ca-list.zeek
+/usr/share/zeek/base/protocols/syslog/__load__.zeek
+/usr/share/zeek/base/protocols/syslog/consts.zeek
+/usr/share/zeek/base/protocols/syslog/main.zeek
+/usr/share/zeek/base/protocols/tunnels/__load__.zeek
+/usr/share/zeek/base/protocols/tunnels/dpd.sig
+/usr/share/zeek/base/protocols/xmpp/__load__.zeek
+/usr/share/zeek/base/protocols/xmpp/dpd.sig
+/usr/share/zeek/base/protocols/xmpp/main.zeek
+/usr/share/zeek/base/utils/active-http.zeek
+/usr/share/zeek/base/utils/addrs.zeek
+/usr/share/zeek/base/utils/backtrace.zeek
+/usr/share/zeek/base/utils/conn-ids.zeek
+/usr/share/zeek/base/utils/dir.zeek
+/usr/share/zeek/base/utils/directions-and-hosts.zeek
+/usr/share/zeek/base/utils/email.zeek
+/usr/share/zeek/base/utils/exec.zeek
+/usr/share/zeek/base/utils/files.zeek
+/usr/share/zeek/base/utils/geoip-distance.zeek
+/usr/share/zeek/base/utils/hash_hrw.zeek
+/usr/share/zeek/base/utils/numbers.zeek
+/usr/share/zeek/base/utils/paths.zeek
+/usr/share/zeek/base/utils/patterns.zeek
+/usr/share/zeek/base/utils/queue.zeek
+/usr/share/zeek/base/utils/site.zeek
+/usr/share/zeek/base/utils/strings.zeek
+/usr/share/zeek/base/utils/thresholds.zeek
+/usr/share/zeek/base/utils/time.zeek
+/usr/share/zeek/base/utils/urls.zeek
+/usr/share/zeek/cmake/AddUninstallTarget.cmake
+/usr/share/zeek/cmake/BifCl.cmake
+/usr/share/zeek/cmake/BinPAC.cmake
+/usr/share/zeek/cmake/BroPlugin.cmake
+/usr/share/zeek/cmake/COPYING
+/usr/share/zeek/cmake/ChangeMacInstallNames.cmake
+/usr/share/zeek/cmake/CheckCompilerArch.cmake
+/usr/share/zeek/cmake/CheckCompilers.cmake
+/usr/share/zeek/cmake/CheckFunctions.cmake
+/usr/share/zeek/cmake/CheckHeaders.cmake
+/usr/share/zeek/cmake/CheckNameserCompat.cmake
+/usr/share/zeek/cmake/CheckOptionalBuildSources.cmake
+/usr/share/zeek/cmake/CheckTypes.cmake
+/usr/share/zeek/cmake/CommonCMakeConfig.cmake
+/usr/share/zeek/cmake/ConfigurePackaging.cmake
+/usr/share/zeek/cmake/FindBIND.cmake
+/usr/share/zeek/cmake/FindBISON.cmake
+/usr/share/zeek/cmake/FindBinPAC.cmake
+/usr/share/zeek/cmake/FindBroker.cmake
+/usr/share/zeek/cmake/FindCAF.cmake
+/usr/share/zeek/cmake/FindCapstats.cmake
+/usr/share/zeek/cmake/FindClangTidy.cmake
+/usr/share/zeek/cmake/FindFTS.cmake
+/usr/share/zeek/cmake/FindGooglePerftools.cmake
+/usr/share/zeek/cmake/FindJeMalloc.cmake
+/usr/share/zeek/cmake/FindKqueue.cmake
+/usr/share/zeek/cmake/FindLibKrb5.cmake
+/usr/share/zeek/cmake/FindLibMMDB.cmake
+/usr/share/zeek/cmake/FindPCAP.cmake
+/usr/share/zeek/cmake/FindPythonDev.cmake
+/usr/share/zeek/cmake/FindRequiredPackage.cmake
+/usr/share/zeek/cmake/FindRocksDB.cmake
+/usr/share/zeek/cmake/FindSubnetTree.cmake
+/usr/share/zeek/cmake/FindTraceSummary.cmake
+/usr/share/zeek/cmake/FindZeek.cmake
+/usr/share/zeek/cmake/GetArchitecture.cmake
+/usr/share/zeek/cmake/InstallClobberImmune.cmake
+/usr/share/zeek/cmake/InstallPackageConfigFile.cmake
+/usr/share/zeek/cmake/InstallShellScript.cmake
+/usr/share/zeek/cmake/InstallSymlink.cmake
+/usr/share/zeek/cmake/MAC_PACKAGE_INTRO
+/usr/share/zeek/cmake/MacDependencyPaths.cmake
+/usr/share/zeek/cmake/MiscTests.cmake
+/usr/share/zeek/cmake/OSSpecific.cmake
+/usr/share/zeek/cmake/OpenSSLTests.cmake
+/usr/share/zeek/cmake/PCAPTests.cmake
+/usr/share/zeek/cmake/ProhibitInSourceBuild.cmake
+/usr/share/zeek/cmake/README
+/usr/share/zeek/cmake/RequireCXX17.cmake
+/usr/share/zeek/cmake/SetDefaultCompileFlags.cmake
+/usr/share/zeek/cmake/SetupRPATH.cmake
+/usr/share/zeek/cmake/UserChangedWarning.cmake
+/usr/share/zeek/cmake/ZeekPlugin.cmake
+/usr/share/zeek/cmake/ZeekPluginCommon.cmake
+/usr/share/zeek/cmake/ZeekPluginDynamic.cmake
+/usr/share/zeek/cmake/ZeekPluginStatic.cmake
+/usr/share/zeek/cmake/ZeekSubdir.cmake
+/usr/share/zeek/cmake/cmake_uninstall.cmake.in
+/usr/share/zeek/cmake/package_postupgrade.sh.in
+/usr/share/zeek/cmake/package_preinstall.sh.in
+/usr/share/zeek/cmake/zeek-plugin-create-package.sh
+/usr/share/zeek/cmake/zeek-plugin-install-package.sh
+/usr/share/zeek/policy/files/unified2/__load__.zeek
+/usr/share/zeek/policy/files/unified2/main.zeek
+/usr/share/zeek/policy/files/x509/log-ocsp.zeek
+/usr/share/zeek/policy/frameworks/control/controllee.zeek
+/usr/share/zeek/policy/frameworks/control/controller.zeek
+/usr/share/zeek/policy/frameworks/dpd/detect-protocols.zeek
+/usr/share/zeek/policy/frameworks/dpd/packet-segment-logging.zeek
+/usr/share/zeek/policy/frameworks/files/detect-MHR.zeek
+/usr/share/zeek/policy/frameworks/files/entropy-test-all-files.zeek
+/usr/share/zeek/policy/frameworks/files/extract-all-files.zeek
+/usr/share/zeek/policy/frameworks/files/hash-all-files.zeek
+/usr/share/zeek/policy/frameworks/intel/do_expire.zeek
+/usr/share/zeek/policy/frameworks/intel/do_notice.zeek
+/usr/share/zeek/policy/frameworks/intel/removal.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/__load__.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/conn-established.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/dns.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/file-hashes.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/file-names.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/http-headers.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/http-url.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/pubkey-hashes.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/smb-filenames.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/smtp-url-extraction.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/smtp.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/ssl.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/where-locations.zeek
+/usr/share/zeek/policy/frameworks/intel/seen/x509.zeek
+/usr/share/zeek/policy/frameworks/intel/whitelist.zeek
+/usr/share/zeek/policy/frameworks/netcontrol/catch-and-release.zeek
+/usr/share/zeek/policy/frameworks/notice/__load__.zeek
+/usr/share/zeek/policy/frameworks/notice/actions/drop.zeek
+/usr/share/zeek/policy/frameworks/notice/extend-email/hostnames.zeek
+/usr/share/zeek/policy/frameworks/packet-filter/shunt.zeek
+/usr/share/zeek/policy/frameworks/signatures/detect-windows-shells.sig
+/usr/share/zeek/policy/frameworks/software/version-changes.zeek
+/usr/share/zeek/policy/frameworks/software/vulnerable.zeek
+/usr/share/zeek/policy/frameworks/software/windows-version-detection.zeek
+/usr/share/zeek/policy/integration/barnyard2/__load__.zeek
+/usr/share/zeek/policy/integration/barnyard2/main.zeek
+/usr/share/zeek/policy/integration/barnyard2/types.zeek
+/usr/share/zeek/policy/integration/collective-intel/__load__.zeek
+/usr/share/zeek/policy/integration/collective-intel/main.zeek
+/usr/share/zeek/policy/misc/capture-loss.zeek
+/usr/share/zeek/policy/misc/detect-traceroute/__load__.zeek
+/usr/share/zeek/policy/misc/detect-traceroute/detect-low-ttls.sig
+/usr/share/zeek/policy/misc/detect-traceroute/main.zeek
+/usr/share/zeek/policy/misc/dump-events.zeek
+/usr/share/zeek/policy/misc/load-balancing.zeek
+/usr/share/zeek/policy/misc/loaded-scripts.zeek
+/usr/share/zeek/policy/misc/profiling.zeek
+/usr/share/zeek/policy/misc/scan.zeek
+/usr/share/zeek/policy/misc/stats.zeek
+/usr/share/zeek/policy/misc/trim-trace-file.zeek
+/usr/share/zeek/policy/misc/unknown-protocols.zeek
+/usr/share/zeek/policy/misc/weird-stats.zeek
+/usr/share/zeek/policy/protocols/conn/known-hosts.zeek
+/usr/share/zeek/policy/protocols/conn/known-services.zeek
+/usr/share/zeek/policy/protocols/conn/mac-logging.zeek
+/usr/share/zeek/policy/protocols/conn/speculative-service.zeek
+/usr/share/zeek/policy/protocols/conn/vlan-logging.zeek
+/usr/share/zeek/policy/protocols/conn/weirds.zeek
+/usr/share/zeek/policy/protocols/dhcp/msg-orig.zeek
+/usr/share/zeek/policy/protocols/dhcp/software.zeek
+/usr/share/zeek/policy/protocols/dhcp/sub-opts.zeek
+/usr/share/zeek/policy/protocols/dns/auth-addl.zeek
+/usr/share/zeek/policy/protocols/dns/detect-external-names.zeek
+/usr/share/zeek/policy/protocols/dns/log-original-query-case.zeek
+/usr/share/zeek/policy/protocols/ftp/detect-bruteforcing.zeek
+/usr/share/zeek/policy/protocols/ftp/detect.zeek
+/usr/share/zeek/policy/protocols/ftp/software.zeek
+/usr/share/zeek/policy/protocols/http/detect-sqli.zeek
+/usr/share/zeek/policy/protocols/http/detect-webapps.sig
+/usr/share/zeek/policy/protocols/http/detect-webapps.zeek
+/usr/share/zeek/policy/protocols/http/header-names.zeek
+/usr/share/zeek/policy/protocols/http/software-browser-plugins.zeek
+/usr/share/zeek/policy/protocols/http/software.zeek
+/usr/share/zeek/policy/protocols/http/var-extraction-cookies.zeek
+/usr/share/zeek/policy/protocols/http/var-extraction-uri.zeek
+/usr/share/zeek/policy/protocols/krb/ticket-logging.zeek
+/usr/share/zeek/policy/protocols/modbus/known-masters-slaves.zeek
+/usr/share/zeek/policy/protocols/modbus/track-memmap.zeek
+/usr/share/zeek/policy/protocols/mqtt/__load__.zeek
+/usr/share/zeek/policy/protocols/mqtt/dpd.sig
+/usr/share/zeek/policy/protocols/mqtt/main.zeek
+/usr/share/zeek/policy/protocols/mysql/software.zeek
+/usr/share/zeek/policy/protocols/rdp/indicate_ssl.zeek
+/usr/share/zeek/policy/protocols/smb/log-cmds.zeek
+/usr/share/zeek/policy/protocols/smtp/blocklists.zeek
+/usr/share/zeek/policy/protocols/smtp/detect-suspicious-orig.zeek
+/usr/share/zeek/policy/protocols/smtp/entities-excerpt.zeek
+/usr/share/zeek/policy/protocols/smtp/software.zeek
+/usr/share/zeek/policy/protocols/ssh/detect-bruteforcing.zeek
+/usr/share/zeek/policy/protocols/ssh/geo-data.zeek
+/usr/share/zeek/policy/protocols/ssh/interesting-hostnames.zeek
+/usr/share/zeek/policy/protocols/ssh/software.zeek
+/usr/share/zeek/policy/protocols/ssl/expiring-certs.zeek
+/usr/share/zeek/policy/protocols/ssl/extract-certs-pem.zeek
+/usr/share/zeek/policy/protocols/ssl/heartbleed.zeek
+/usr/share/zeek/policy/protocols/ssl/known-certs.zeek
+/usr/share/zeek/policy/protocols/ssl/log-hostcerts-only.zeek
+/usr/share/zeek/policy/protocols/ssl/notary.zeek
+/usr/share/zeek/policy/protocols/ssl/validate-certs.zeek
+/usr/share/zeek/policy/protocols/ssl/validate-ocsp.zeek
+/usr/share/zeek/policy/protocols/ssl/validate-sct.zeek
+/usr/share/zeek/policy/protocols/ssl/weak-keys.zeek
+/usr/share/zeek/policy/tuning/__load__.zeek
+/usr/share/zeek/policy/tuning/defaults/__load__.zeek
+/usr/share/zeek/policy/tuning/defaults/extracted_file_limits.zeek
+/usr/share/zeek/policy/tuning/defaults/packet-fragments.zeek
+/usr/share/zeek/policy/tuning/defaults/warnings.zeek
+/usr/share/zeek/policy/tuning/json-logs.zeek
+/usr/share/zeek/policy/tuning/track-all-assets.zeek
+/usr/share/zeek/site/local.zeek
+/usr/share/zeek/test-all-policy.zeek
+/usr/share/zeek/zeekctl/__load__.zeek
+/usr/share/zeek/zeekctl/auto.zeek
+/usr/share/zeek/zeekctl/check.zeek
+/usr/share/zeek/zeekctl/main.zeek
+/usr/share/zeek/zeekctl/process-trace.zeek
+/usr/share/zeek/zeekctl/standalone.zeek
+/usr/share/zeek/zeekygen/__load__.zeek
+/usr/share/zeek/zeekygen/example.zeek
+/usr/share/zeekctl/scripts/archive-log
+/usr/share/zeekctl/scripts/check-config
+/usr/share/zeekctl/scripts/crash-diag
+/usr/share/zeekctl/scripts/delete-log
+/usr/share/zeekctl/scripts/expire-crash
+/usr/share/zeekctl/scripts/expire-logs
+/usr/share/zeekctl/scripts/helpers/check-pid
+/usr/share/zeekctl/scripts/helpers/df
+/usr/share/zeekctl/scripts/helpers/first-line
+/usr/share/zeekctl/scripts/helpers/start
+/usr/share/zeekctl/scripts/helpers/stop
+/usr/share/zeekctl/scripts/helpers/to-bytes.awk
+/usr/share/zeekctl/scripts/helpers/top
+/usr/share/zeekctl/scripts/make-archive-name
+/usr/share/zeekctl/scripts/post-terminate
+/usr/share/zeekctl/scripts/postprocessors/summarize-connections
+/usr/share/zeekctl/scripts/run-zeek
+/usr/share/zeekctl/scripts/run-zeek-on-trace
+/usr/share/zeekctl/scripts/send-mail
+/usr/share/zeekctl/scripts/set-zeek-path
+/usr/share/zeekctl/scripts/stats-to-csv
+/usr/share/zeekctl/scripts/zeekctl-config.sh
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/binpac/binpac.h
+/usr/include/binpac/binpac_analyzer.h
+/usr/include/binpac/binpac_buffer.h
+/usr/include/binpac/binpac_bytestring.h
+/usr/include/binpac/binpac_exception.h
+/usr/include/binpac/binpac_regex.h
+/usr/include/broker/address.hh
+/usr/include/broker/alm/stream_transport.hh
+/usr/include/broker/api_flags.hh
+/usr/include/broker/atoms.hh
+/usr/include/broker/backend.hh
+/usr/include/broker/backend_options.hh
+/usr/include/broker/bad_variant_access.hh
+/usr/include/broker/bro.hh
+/usr/include/broker/broker.hh
+/usr/include/broker/config.hh
+/usr/include/broker/configuration.hh
+/usr/include/broker/convert.hh
+/usr/include/broker/core_actor.hh
+/usr/include/broker/data.hh
+/usr/include/broker/defaults.hh
+/usr/include/broker/detail/abstract_backend.hh
+/usr/include/broker/detail/appliers.hh
+/usr/include/broker/detail/assert.hh
+/usr/include/broker/detail/blob.hh
+/usr/include/broker/detail/central_dispatcher.hh
+/usr/include/broker/detail/clone_actor.hh
+/usr/include/broker/detail/core_recorder.hh
+/usr/include/broker/detail/core_scatterer.hh
+/usr/include/broker/detail/data_generator.hh
+/usr/include/broker/detail/die.hh
+/usr/include/broker/detail/filesystem.hh
+/usr/include/broker/detail/flare.hh
+/usr/include/broker/detail/flare_actor.hh
+/usr/include/broker/detail/generator_file_reader.hh
+/usr/include/broker/detail/generator_file_writer.hh
+/usr/include/broker/detail/has_network_info.hh
+/usr/include/broker/detail/hash.hh
+/usr/include/broker/detail/item_scope.hh
+/usr/include/broker/detail/lift.hh
+/usr/include/broker/detail/make_backend.hh
+/usr/include/broker/detail/master_actor.hh
+/usr/include/broker/detail/master_resolver.hh
+/usr/include/broker/detail/memory_backend.hh
+/usr/include/broker/detail/meta_command_writer.hh
+/usr/include/broker/detail/meta_data_writer.hh
+/usr/include/broker/detail/network_cache.hh
+/usr/include/broker/detail/operators.hh
+/usr/include/broker/detail/prefix_matcher.hh
+/usr/include/broker/detail/radix_tree.hh
+/usr/include/broker/detail/read_value.hh
+/usr/include/broker/detail/retry_state.hh
+/usr/include/broker/detail/rocksdb_backend.hh
+/usr/include/broker/detail/scoped_flare_actor.hh
+/usr/include/broker/detail/shared_publisher_queue.hh
+/usr/include/broker/detail/shared_queue.hh
+/usr/include/broker/detail/shared_subscriber_queue.hh
+/usr/include/broker/detail/sqlite_backend.hh
+/usr/include/broker/detail/store_actor.hh
+/usr/include/broker/detail/subscription.hh
+/usr/include/broker/detail/type_traits.hh
+/usr/include/broker/detail/unipath_manager.hh
+/usr/include/broker/detail/write_value.hh
+/usr/include/broker/endpoint.hh
+/usr/include/broker/endpoint_info.hh
+/usr/include/broker/enum_value.hh
+/usr/include/broker/error.hh
+/usr/include/broker/expected.hh
+/usr/include/broker/filter_type.hh
+/usr/include/broker/frontend.hh
+/usr/include/broker/fwd.hh
+/usr/include/broker/internal_command.hh
+/usr/include/broker/logger.hh
+/usr/include/broker/mailbox.hh
+/usr/include/broker/message.hh
+/usr/include/broker/mixin/connector.hh
+/usr/include/broker/mixin/data_store_manager.hh
+/usr/include/broker/mixin/notifier.hh
+/usr/include/broker/mixin/recorder.hh
+/usr/include/broker/network_info.hh
+/usr/include/broker/none.hh
+/usr/include/broker/optional.hh
+/usr/include/broker/peer_filter.hh
+/usr/include/broker/peer_flags.hh
+/usr/include/broker/peer_info.hh
+/usr/include/broker/peer_status.hh
+/usr/include/broker/port.hh
+/usr/include/broker/publisher.hh
+/usr/include/broker/publisher_id.hh
+/usr/include/broker/snapshot.hh
+/usr/include/broker/status.hh
+/usr/include/broker/status_subscriber.hh
+/usr/include/broker/store.hh
+/usr/include/broker/store_event.hh
+/usr/include/broker/subnet.hh
+/usr/include/broker/subscriber.hh
+/usr/include/broker/subscriber_base.hh
+/usr/include/broker/time.hh
+/usr/include/broker/timeout.hh
+/usr/include/broker/topic.hh
+/usr/include/broker/version.hh
+/usr/include/broker/zeek.hh
+/usr/include/caf/abstract_actor.hpp
+/usr/include/caf/abstract_channel.hpp
+/usr/include/caf/abstract_group.hpp
+/usr/include/caf/actor.hpp
+/usr/include/caf/actor_addr.hpp
+/usr/include/caf/actor_cast.hpp
+/usr/include/caf/actor_clock.hpp
+/usr/include/caf/actor_companion.hpp
+/usr/include/caf/actor_config.hpp
+/usr/include/caf/actor_control_block.hpp
+/usr/include/caf/actor_factory.hpp
+/usr/include/caf/actor_ostream.hpp
+/usr/include/caf/actor_pool.hpp
+/usr/include/caf/actor_profiler.hpp
+/usr/include/caf/actor_proxy.hpp
+/usr/include/caf/actor_registry.hpp
+/usr/include/caf/actor_storage.hpp
+/usr/include/caf/actor_system.hpp
+/usr/include/caf/actor_system_config.hpp
+/usr/include/caf/actor_traits.hpp
+/usr/include/caf/after.hpp
+/usr/include/caf/all.hpp
+/usr/include/caf/allowed_unsafe_message_type.hpp
+/usr/include/caf/atom.hpp
+/usr/include/caf/attach_continuous_stream_source.hpp
+/usr/include/caf/attach_continuous_stream_stage.hpp
+/usr/include/caf/attach_stream_sink.hpp
+/usr/include/caf/attach_stream_source.hpp
+/usr/include/caf/attach_stream_stage.hpp
+/usr/include/caf/attachable.hpp
+/usr/include/caf/behavior.hpp
+/usr/include/caf/behavior_policy.hpp
+/usr/include/caf/binary_deserializer.hpp
+/usr/include/caf/binary_serializer.hpp
+/usr/include/caf/blocking_actor.hpp
+/usr/include/caf/broadcast_downstream_manager.hpp
+/usr/include/caf/buffered_downstream_manager.hpp
+/usr/include/caf/byte.hpp
+/usr/include/caf/byte_address.hpp
+/usr/include/caf/byte_buffer.hpp
+/usr/include/caf/byte_span.hpp
+/usr/include/caf/caf_main.hpp
+/usr/include/caf/callback.hpp
+/usr/include/caf/catch_all.hpp
+/usr/include/caf/check_typed_input.hpp
+/usr/include/caf/composed_type.hpp
+/usr/include/caf/config.hpp
+/usr/include/caf/config_option.hpp
+/usr/include/caf/config_option_adder.hpp
+/usr/include/caf/config_option_set.hpp
+/usr/include/caf/config_value.hpp
+/usr/include/caf/config_value_reader.hpp
+/usr/include/caf/config_value_writer.hpp
+/usr/include/caf/const_typed_message_view.hpp
+/usr/include/caf/cow_tuple.hpp
+/usr/include/caf/credit_controller.hpp
+/usr/include/caf/decorator/sequencer.hpp
+/usr/include/caf/decorator/splitter.hpp
+/usr/include/caf/deduce_mpi.hpp
+/usr/include/caf/deep_to_string.hpp
+/usr/include/caf/default_attachable.hpp
+/usr/include/caf/default_downstream_manager.hpp
+/usr/include/caf/default_enum_inspect.hpp
+/usr/include/caf/default_sum_type_access.hpp
+/usr/include/caf/defaults.hpp
+/usr/include/caf/delegated.hpp
+/usr/include/caf/deserializer.hpp
+/usr/include/caf/detail/abstract_worker.hpp
+/usr/include/caf/detail/abstract_worker_hub.hpp
+/usr/include/caf/detail/algorithms.hpp
+/usr/include/caf/detail/append_hex.hpp
+/usr/include/caf/detail/append_percent_encoded.hpp
+/usr/include/caf/detail/apply_args.hpp
+/usr/include/caf/detail/arg_wrapper.hpp
+/usr/include/caf/detail/as_mutable_ref.hpp
+/usr/include/caf/detail/assign_inspector_try_result.hpp
+/usr/include/caf/detail/behavior_impl.hpp
+/usr/include/caf/detail/behavior_stack.hpp
+/usr/include/caf/detail/blocking_behavior.hpp
+/usr/include/caf/detail/bounds_checker.hpp
+/usr/include/caf/detail/build_config.hpp
+/usr/include/caf/detail/call_cfun.hpp
+/usr/include/caf/detail/cas_weak.hpp
+/usr/include/caf/detail/comparable.hpp
+/usr/include/caf/detail/config_consumer.hpp
+/usr/include/caf/detail/consumer.hpp
+/usr/include/caf/detail/core_export.hpp
+/usr/include/caf/detail/default_invoke_result_visitor.hpp
+/usr/include/caf/detail/delegate_serialize.hpp
+/usr/include/caf/detail/double_ended_queue.hpp
+/usr/include/caf/detail/encode_base64.hpp
+/usr/include/caf/detail/enqueue_result.hpp
+/usr/include/caf/detail/functor_attachable.hpp
+/usr/include/caf/detail/gcd.hpp
+/usr/include/caf/detail/get_mac_addresses.hpp
+/usr/include/caf/detail/get_process_id.hpp
+/usr/include/caf/detail/get_root_uuid.hpp
+/usr/include/caf/detail/glob_match.hpp
+/usr/include/caf/detail/group_tunnel.hpp
+/usr/include/caf/detail/ieee_754.hpp
+/usr/include/caf/detail/implicit_conversions.hpp
+/usr/include/caf/detail/init_fun_factory.hpp
+/usr/include/caf/detail/int_list.hpp
+/usr/include/caf/detail/invoke_result_visitor.hpp
+/usr/include/caf/detail/io_export.hpp
+/usr/include/caf/detail/is_complete.hpp
+/usr/include/caf/detail/is_one_of.hpp
+/usr/include/caf/detail/limited_vector.hpp
+/usr/include/caf/detail/local_group_module.hpp
+/usr/include/caf/detail/log_level.hpp
+/usr/include/caf/detail/make_meta_object.hpp
+/usr/include/caf/detail/make_unique.hpp
+/usr/include/caf/detail/mask_bits.hpp
+/usr/include/caf/detail/message_builder_element.hpp
+/usr/include/caf/detail/message_data.hpp
+/usr/include/caf/detail/meta_object.hpp
+/usr/include/caf/detail/move_if_not_ptr.hpp
+/usr/include/caf/detail/network_order.hpp
+/usr/include/caf/detail/offset_at.hpp
+/usr/include/caf/detail/openssl_export.hpp
+/usr/include/caf/detail/optional_message_visitor.hpp
+/usr/include/caf/detail/overload.hpp
+/usr/include/caf/detail/padded_size.hpp
+/usr/include/caf/detail/parse.hpp
+/usr/include/caf/detail/parser/add_ascii.hpp
+/usr/include/caf/detail/parser/ascii_to_int.hpp
+/usr/include/caf/detail/parser/chars.hpp
+/usr/include/caf/detail/parser/fsm.hpp
+/usr/include/caf/detail/parser/fsm_undef.hpp
+/usr/include/caf/detail/parser/is_char.hpp
+/usr/include/caf/detail/parser/is_digit.hpp
+/usr/include/caf/detail/parser/read_bool.hpp
+/usr/include/caf/detail/parser/read_config.hpp
+/usr/include/caf/detail/parser/read_floating_point.hpp
+/usr/include/caf/detail/parser/read_ipv4_address.hpp
+/usr/include/caf/detail/parser/read_ipv6_address.hpp
+/usr/include/caf/detail/parser/read_number.hpp
+/usr/include/caf/detail/parser/read_number_or_timespan.hpp
+/usr/include/caf/detail/parser/read_signed_integer.hpp
+/usr/include/caf/detail/parser/read_string.hpp
+/usr/include/caf/detail/parser/read_timespan.hpp
+/usr/include/caf/detail/parser/read_unsigned_integer.hpp
+/usr/include/caf/detail/parser/read_uri.hpp
+/usr/include/caf/detail/parser/sub_ascii.hpp
+/usr/include/caf/detail/path_state.hpp
+/usr/include/caf/detail/pp.hpp
+/usr/include/caf/detail/pretty_type_name.hpp
+/usr/include/caf/detail/print.hpp
+/usr/include/caf/detail/private_thread.hpp
+/usr/include/caf/detail/private_thread_pool.hpp
+/usr/include/caf/detail/profiled_send.hpp
+/usr/include/caf/detail/prometheus_broker.hpp
+/usr/include/caf/detail/pseudo_tuple.hpp
+/usr/include/caf/detail/raw_access.hpp
+/usr/include/caf/detail/remote_group_module.hpp
+/usr/include/caf/detail/ringbuffer.hpp
+/usr/include/caf/detail/ripemd_160.hpp
+/usr/include/caf/detail/safe_equal.hpp
+/usr/include/caf/detail/scope_guard.hpp
+/usr/include/caf/detail/select_all.hpp
+/usr/include/caf/detail/select_integer_type.hpp
+/usr/include/caf/detail/serialized_size.hpp
+/usr/include/caf/detail/set_thread_name.hpp
+/usr/include/caf/detail/shared_spinlock.hpp
+/usr/include/caf/detail/simple_actor_clock.hpp
+/usr/include/caf/detail/size_based_credit_controller.hpp
+/usr/include/caf/detail/socket_guard.hpp
+/usr/include/caf/detail/spawn_fwd.hpp
+/usr/include/caf/detail/spawnable.hpp
+/usr/include/caf/detail/split_join.hpp
+/usr/include/caf/detail/squashed_int.hpp
+/usr/include/caf/detail/stream_distribution_tree.hpp
+/usr/include/caf/detail/stream_sink_driver_impl.hpp
+/usr/include/caf/detail/stream_sink_impl.hpp
+/usr/include/caf/detail/stream_source_driver_impl.hpp
+/usr/include/caf/detail/stream_source_impl.hpp
+/usr/include/caf/detail/stream_stage_driver_impl.hpp
+/usr/include/caf/detail/stream_stage_impl.hpp
+/usr/include/caf/detail/stringification_inspector.hpp
+/usr/include/caf/detail/sync_request_bouncer.hpp
+/usr/include/caf/detail/tail_argument_token.hpp
+/usr/include/caf/detail/tbind.hpp
+/usr/include/caf/detail/test_actor_clock.hpp
+/usr/include/caf/detail/thread_safe_actor_clock.hpp
+/usr/include/caf/detail/tick_emitter.hpp
+/usr/include/caf/detail/token_based_credit_controller.hpp
+/usr/include/caf/detail/try_serialize.hpp
+/usr/include/caf/detail/type_id_list_builder.hpp
+/usr/include/caf/detail/type_list.hpp
+/usr/include/caf/detail/type_pair.hpp
+/usr/include/caf/detail/type_traits.hpp
+/usr/include/caf/detail/typed_actor_util.hpp
+/usr/include/caf/detail/unique_function.hpp
+/usr/include/caf/detail/unordered_flat_map.hpp
+/usr/include/caf/detail/variant_data.hpp
+/usr/include/caf/detail/worker_hub.hpp
+/usr/include/caf/dictionary.hpp
+/usr/include/caf/downstream.hpp
+/usr/include/caf/downstream_manager.hpp
+/usr/include/caf/downstream_manager_base.hpp
+/usr/include/caf/downstream_msg.hpp
+/usr/include/caf/error.hpp
+/usr/include/caf/error_code.hpp
+/usr/include/caf/event_based_actor.hpp
+/usr/include/caf/exec_main.hpp
+/usr/include/caf/execution_unit.hpp
+/usr/include/caf/exit_reason.hpp
+/usr/include/caf/expected.hpp
+/usr/include/caf/extend.hpp
+/usr/include/caf/forwarding_actor_proxy.hpp
+/usr/include/caf/function_view.hpp
+/usr/include/caf/fused_downstream_manager.hpp
+/usr/include/caf/fwd.hpp
+/usr/include/caf/group.hpp
+/usr/include/caf/group_manager.hpp
+/usr/include/caf/group_module.hpp
+/usr/include/caf/hash/fnv.hpp
+/usr/include/caf/hash/sha1.hpp
+/usr/include/caf/illegal_message_element.hpp
+/usr/include/caf/inbound_path.hpp
+/usr/include/caf/infer_handle.hpp
+/usr/include/caf/init_global_meta_objects.hpp
+/usr/include/caf/input_range.hpp
+/usr/include/caf/inspector_access.hpp
+/usr/include/caf/inspector_access_base.hpp
+/usr/include/caf/inspector_access_type.hpp
+/usr/include/caf/interface_mismatch.hpp
+/usr/include/caf/intrusive/drr_cached_queue.hpp
+/usr/include/caf/intrusive/drr_queue.hpp
+/usr/include/caf/intrusive/fifo_inbox.hpp
+/usr/include/caf/intrusive/forward_iterator.hpp
+/usr/include/caf/intrusive/inbox_result.hpp
+/usr/include/caf/intrusive/lifo_inbox.hpp
+/usr/include/caf/intrusive/new_round_result.hpp
+/usr/include/caf/intrusive/singly_linked.hpp
+/usr/include/caf/intrusive/task_queue.hpp
+/usr/include/caf/intrusive/task_result.hpp
+/usr/include/caf/intrusive/wdrr_dynamic_multiplexed_queue.hpp
+/usr/include/caf/intrusive/wdrr_fixed_multiplexed_queue.hpp
+/usr/include/caf/intrusive_cow_ptr.hpp
+/usr/include/caf/intrusive_ptr.hpp
+/usr/include/caf/invalid_stream.hpp
+/usr/include/caf/invoke_message_result.hpp
+/usr/include/caf/io/abstract_broker.hpp
+/usr/include/caf/io/accept_handle.hpp
+/usr/include/caf/io/all.hpp
+/usr/include/caf/io/basp/all.hpp
+/usr/include/caf/io/basp/connection_state.hpp
+/usr/include/caf/io/basp/endpoint_context.hpp
+/usr/include/caf/io/basp/fwd.hpp
+/usr/include/caf/io/basp/header.hpp
+/usr/include/caf/io/basp/instance.hpp
+/usr/include/caf/io/basp/message_queue.hpp
+/usr/include/caf/io/basp/message_type.hpp
+/usr/include/caf/io/basp/remote_message_handler.hpp
+/usr/include/caf/io/basp/routing_table.hpp
+/usr/include/caf/io/basp/version.hpp
+/usr/include/caf/io/basp/worker.hpp
+/usr/include/caf/io/basp_broker.hpp
+/usr/include/caf/io/broker.hpp
+/usr/include/caf/io/broker_servant.hpp
+/usr/include/caf/io/close.hpp
+/usr/include/caf/io/connect.hpp
+/usr/include/caf/io/connection_handle.hpp
+/usr/include/caf/io/connection_helper.hpp
+/usr/include/caf/io/datagram_handle.hpp
+/usr/include/caf/io/datagram_servant.hpp
+/usr/include/caf/io/doorman.hpp
+/usr/include/caf/io/fwd.hpp
+/usr/include/caf/io/handle.hpp
+/usr/include/caf/io/middleman.hpp
+/usr/include/caf/io/middleman_actor.hpp
+/usr/include/caf/io/middleman_actor_impl.hpp
+/usr/include/caf/io/network/acceptor.hpp
+/usr/include/caf/io/network/acceptor_impl.hpp
+/usr/include/caf/io/network/acceptor_manager.hpp
+/usr/include/caf/io/network/datagram_handler.hpp
+/usr/include/caf/io/network/datagram_handler_impl.hpp
+/usr/include/caf/io/network/datagram_manager.hpp
+/usr/include/caf/io/network/datagram_servant_impl.hpp
+/usr/include/caf/io/network/default_multiplexer.hpp
+/usr/include/caf/io/network/doorman_impl.hpp
+/usr/include/caf/io/network/event_handler.hpp
+/usr/include/caf/io/network/interfaces.hpp
+/usr/include/caf/io/network/ip_endpoint.hpp
+/usr/include/caf/io/network/manager.hpp
+/usr/include/caf/io/network/multiplexer.hpp
+/usr/include/caf/io/network/native_socket.hpp
+/usr/include/caf/io/network/operation.hpp
+/usr/include/caf/io/network/pipe_reader.hpp
+/usr/include/caf/io/network/protocol.hpp
+/usr/include/caf/io/network/receive_buffer.hpp
+/usr/include/caf/io/network/rw_state.hpp
+/usr/include/caf/io/network/scribe_impl.hpp
+/usr/include/caf/io/network/stream.hpp
+/usr/include/caf/io/network/stream_impl.hpp
+/usr/include/caf/io/network/stream_manager.hpp
+/usr/include/caf/io/network/test_multiplexer.hpp
+/usr/include/caf/io/open.hpp
+/usr/include/caf/io/publish.hpp
+/usr/include/caf/io/publish_local_groups.hpp
+/usr/include/caf/io/receive_policy.hpp
+/usr/include/caf/io/remote_actor.hpp
+/usr/include/caf/io/remote_group.hpp
+/usr/include/caf/io/scribe.hpp
+/usr/include/caf/io/system_messages.hpp
+/usr/include/caf/io/typed_broker.hpp
+/usr/include/caf/io/unpublish.hpp
+/usr/include/caf/ip_address.hpp
+/usr/include/caf/ip_endpoint.hpp
+/usr/include/caf/ip_subnet.hpp
+/usr/include/caf/ipv4_address.hpp
+/usr/include/caf/ipv4_endpoint.hpp
+/usr/include/caf/ipv4_subnet.hpp
+/usr/include/caf/ipv6_address.hpp
+/usr/include/caf/ipv6_endpoint.hpp
+/usr/include/caf/ipv6_subnet.hpp
+/usr/include/caf/is_actor_handle.hpp
+/usr/include/caf/is_error_code_enum.hpp
+/usr/include/caf/is_message_sink.hpp
+/usr/include/caf/is_timeout_or_catch_all.hpp
+/usr/include/caf/is_typed_actor.hpp
+/usr/include/caf/load_inspector.hpp
+/usr/include/caf/load_inspector_base.hpp
+/usr/include/caf/local_actor.hpp
+/usr/include/caf/locks.hpp
+/usr/include/caf/logger.hpp
+/usr/include/caf/mailbox_element.hpp
+/usr/include/caf/make_actor.hpp
+/usr/include/caf/make_config_option.hpp
+/usr/include/caf/make_copy_on_write.hpp
+/usr/include/caf/make_counted.hpp
+/usr/include/caf/make_message.hpp
+/usr/include/caf/make_sink_result.hpp
+/usr/include/caf/make_source_result.hpp
+/usr/include/caf/make_stage_result.hpp
+/usr/include/caf/may_have_timeout.hpp
+/usr/include/caf/memory_managed.hpp
+/usr/include/caf/message.hpp
+/usr/include/caf/message_builder.hpp
+/usr/include/caf/message_handler.hpp
+/usr/include/caf/message_id.hpp
+/usr/include/caf/message_priority.hpp
+/usr/include/caf/meta/annotation.hpp
+/usr/include/caf/meta/hex_formatted.hpp
+/usr/include/caf/meta/load_callback.hpp
+/usr/include/caf/meta/omittable.hpp
+/usr/include/caf/meta/omittable_if_empty.hpp
+/usr/include/caf/meta/omittable_if_none.hpp
+/usr/include/caf/meta/save_callback.hpp
+/usr/include/caf/meta/type_name.hpp
+/usr/include/caf/mixin/actor_widget.hpp
+/usr/include/caf/mixin/behavior_changer.hpp
+/usr/include/caf/mixin/requester.hpp
+/usr/include/caf/mixin/sender.hpp
+/usr/include/caf/mixin/subscriber.hpp
+/usr/include/caf/monitorable_actor.hpp
+/usr/include/caf/no_stages.hpp
+/usr/include/caf/node_id.hpp
+/usr/include/caf/none.hpp
+/usr/include/caf/openssl/all.hpp
+/usr/include/caf/openssl/manager.hpp
+/usr/include/caf/openssl/middleman_actor.hpp
+/usr/include/caf/openssl/publish.hpp
+/usr/include/caf/openssl/remote_actor.hpp
+/usr/include/caf/openssl/session.hpp
+/usr/include/caf/openssl/unpublish.hpp
+/usr/include/caf/optional.hpp
+/usr/include/caf/others.hpp
+/usr/include/caf/outbound_path.hpp
+/usr/include/caf/parser_state.hpp
+/usr/include/caf/pec.hpp
+/usr/include/caf/policy/arg.hpp
+/usr/include/caf/policy/categorized.hpp
+/usr/include/caf/policy/downstream_messages.hpp
+/usr/include/caf/policy/normal_messages.hpp
+/usr/include/caf/policy/scheduler_policy.hpp
+/usr/include/caf/policy/select_all.hpp
+/usr/include/caf/policy/select_any.hpp
+/usr/include/caf/policy/single_response.hpp
+/usr/include/caf/policy/tcp.hpp
+/usr/include/caf/policy/udp.hpp
+/usr/include/caf/policy/unprofiled.hpp
+/usr/include/caf/policy/upstream_messages.hpp
+/usr/include/caf/policy/urgent_messages.hpp
+/usr/include/caf/policy/work_sharing.hpp
+/usr/include/caf/policy/work_stealing.hpp
+/usr/include/caf/prohibit_top_level_spawn_marker.hpp
+/usr/include/caf/proxy_registry.hpp
+/usr/include/caf/raise_error.hpp
+/usr/include/caf/ref_counted.hpp
+/usr/include/caf/replies_to.hpp
+/usr/include/caf/response_handle.hpp
+/usr/include/caf/response_promise.hpp
+/usr/include/caf/response_type.hpp
+/usr/include/caf/result.hpp
+/usr/include/caf/resumable.hpp
+/usr/include/caf/save_inspector.hpp
+/usr/include/caf/save_inspector_base.hpp
+/usr/include/caf/scheduled_actor.hpp
+/usr/include/caf/scheduler.hpp
+/usr/include/caf/scheduler/abstract_coordinator.hpp
+/usr/include/caf/scheduler/coordinator.hpp
+/usr/include/caf/scheduler/profiled_coordinator.hpp
+/usr/include/caf/scheduler/test_coordinator.hpp
+/usr/include/caf/scheduler/worker.hpp
+/usr/include/caf/scoped_actor.hpp
+/usr/include/caf/scoped_execution_unit.hpp
+/usr/include/caf/sec.hpp
+/usr/include/caf/send.hpp
+/usr/include/caf/serializer.hpp
+/usr/include/caf/settings.hpp
+/usr/include/caf/skip.hpp
+/usr/include/caf/span.hpp
+/usr/include/caf/spawn_options.hpp
+/usr/include/caf/stateful_actor.hpp
+/usr/include/caf/static_visitor.hpp
+/usr/include/caf/stream.hpp
+/usr/include/caf/stream_aborter.hpp
+/usr/include/caf/stream_finalize_trait.hpp
+/usr/include/caf/stream_manager.hpp
+/usr/include/caf/stream_priority.hpp
+/usr/include/caf/stream_sink.hpp
+/usr/include/caf/stream_sink_driver.hpp
+/usr/include/caf/stream_sink_trait.hpp
+/usr/include/caf/stream_slot.hpp
+/usr/include/caf/stream_source.hpp
+/usr/include/caf/stream_source_driver.hpp
+/usr/include/caf/stream_source_trait.hpp
+/usr/include/caf/stream_stage.hpp
+/usr/include/caf/stream_stage_driver.hpp
+/usr/include/caf/stream_stage_trait.hpp
+/usr/include/caf/string_algorithms.hpp
+/usr/include/caf/string_view.hpp
+/usr/include/caf/sum_type.hpp
+/usr/include/caf/sum_type_access.hpp
+/usr/include/caf/sum_type_token.hpp
+/usr/include/caf/system_messages.hpp
+/usr/include/caf/tag/boxing_type.hpp
+/usr/include/caf/telemetry/collector/prometheus.hpp
+/usr/include/caf/telemetry/counter.hpp
+/usr/include/caf/telemetry/dbl_gauge.hpp
+/usr/include/caf/telemetry/gauge.hpp
+/usr/include/caf/telemetry/histogram.hpp
+/usr/include/caf/telemetry/int_gauge.hpp
+/usr/include/caf/telemetry/label.hpp
+/usr/include/caf/telemetry/label_view.hpp
+/usr/include/caf/telemetry/metric.hpp
+/usr/include/caf/telemetry/metric_family.hpp
+/usr/include/caf/telemetry/metric_family_impl.hpp
+/usr/include/caf/telemetry/metric_impl.hpp
+/usr/include/caf/telemetry/metric_registry.hpp
+/usr/include/caf/telemetry/metric_type.hpp
+/usr/include/caf/telemetry/timer.hpp
+/usr/include/caf/term.hpp
+/usr/include/caf/test/bdd_dsl.hpp
+/usr/include/caf/test/dsl.hpp
+/usr/include/caf/test/io_dsl.hpp
+/usr/include/caf/test/unit_test.hpp
+/usr/include/caf/test/unit_test_impl.hpp
+/usr/include/caf/thread_hook.hpp
+/usr/include/caf/timeout_definition.hpp
+/usr/include/caf/timespan.hpp
+/usr/include/caf/timestamp.hpp
+/usr/include/caf/tracing_data.hpp
+/usr/include/caf/tracing_data_factory.hpp
+/usr/include/caf/type_erased_value.hpp
+/usr/include/caf/type_id.hpp
+/usr/include/caf/type_id_list.hpp
+/usr/include/caf/typed_actor.hpp
+/usr/include/caf/typed_actor_pointer.hpp
+/usr/include/caf/typed_actor_view.hpp
+/usr/include/caf/typed_actor_view_base.hpp
+/usr/include/caf/typed_behavior.hpp
+/usr/include/caf/typed_event_based_actor.hpp
+/usr/include/caf/typed_message_view.hpp
+/usr/include/caf/typed_response_promise.hpp
+/usr/include/caf/unifyn.hpp
+/usr/include/caf/unit.hpp
+/usr/include/caf/unsafe_behavior_init.hpp
+/usr/include/caf/upstream_msg.hpp
+/usr/include/caf/uri.hpp
+/usr/include/caf/uri_builder.hpp
+/usr/include/caf/uuid.hpp
+/usr/include/caf/variant.hpp
+/usr/include/caf/weak_intrusive_ptr.hpp
+/usr/include/paraglob/exceptions.h
+/usr/include/paraglob/node.h
+/usr/include/paraglob/paraglob.h
+/usr/include/paraglob/serializer.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/allocators.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/cursorstreamwrapper.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/document.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/encodedstream.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/encodings.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/error/en.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/error/error.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/filereadstream.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/filewritestream.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/fwd.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/biginteger.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/clzll.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/diyfp.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/dtoa.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/ieee754.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/itoa.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/meta.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/pow10.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/regex.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/stack.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/strfunc.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/strtod.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/internal/swap.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/istreamwrapper.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/memorybuffer.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/memorystream.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/msinttypes/inttypes.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/msinttypes/stdint.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/ostreamwrapper.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/pointer.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/prettywriter.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/rapidjson.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/reader.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/schema.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/stream.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/stringbuffer.h
+/usr/include/zeek/3rdparty/rapidjson/include/rapidjson/writer.h
+/usr/include/zeek/3rdparty/sqlite3.h
+/usr/include/zeek/Anon.h
+/usr/include/zeek/Attr.h
+/usr/include/zeek/Base64.h
+/usr/include/zeek/BifReturnVal.h
+/usr/include/zeek/BroList.h
+/usr/include/zeek/BroString.h
+/usr/include/zeek/CCL.h
+/usr/include/zeek/CompHash.h
+/usr/include/zeek/Conn.h
+/usr/include/zeek/Continuation.h
+/usr/include/zeek/ConvertUTF.h
+/usr/include/zeek/DFA.h
+/usr/include/zeek/DNS_Mgr.h
+/usr/include/zeek/DbgBreakpoint.h
+/usr/include/zeek/DbgDisplay.h
+/usr/include/zeek/DbgWatch.h
+/usr/include/zeek/Debug.h
+/usr/include/zeek/DebugCmdInfoConstants.h
+/usr/include/zeek/DebugCmds.h
+/usr/include/zeek/DebugLogger.h
+/usr/include/zeek/Desc.h
+/usr/include/zeek/Dict.h
+/usr/include/zeek/Discard.h
+/usr/include/zeek/EquivClass.h
+/usr/include/zeek/Event.h
+/usr/include/zeek/EventHandler.h
+/usr/include/zeek/EventLauncher.h
+/usr/include/zeek/EventRegistry.h
+/usr/include/zeek/Expr.h
+/usr/include/zeek/File.h
+/usr/include/zeek/Flare.h
+/usr/include/zeek/Frag.h
+/usr/include/zeek/Frame.h
+/usr/include/zeek/Func.h
+/usr/include/zeek/Hash.h
+/usr/include/zeek/ID.h
+/usr/include/zeek/IP.h
+/usr/include/zeek/IPAddr.h
+/usr/include/zeek/IntSet.h
+/usr/include/zeek/IntrusivePtr.h
+/usr/include/zeek/List.h
+/usr/include/zeek/NFA.h
+/usr/include/zeek/Net.h
+/usr/include/zeek/NetVar.h
+/usr/include/zeek/Notifier.h
+/usr/include/zeek/Obj.h
+/usr/include/zeek/OpaqueVal.h
+/usr/include/zeek/Options.h
+/usr/include/zeek/PacketDumper.h
+/usr/include/zeek/PacketFilter.h
+/usr/include/zeek/Pipe.h
+/usr/include/zeek/PolicyFile.h
+/usr/include/zeek/PrefixTable.h
+/usr/include/zeek/PriorityQueue.h
+/usr/include/zeek/Queue.h
+/usr/include/zeek/RE.h
+/usr/include/zeek/RandTest.h
+/usr/include/zeek/Reassem.h
+/usr/include/zeek/Reporter.h
+/usr/include/zeek/Rule.h
+/usr/include/zeek/RuleAction.h
+/usr/include/zeek/RuleCondition.h
+/usr/include/zeek/RuleMatcher.h
+/usr/include/zeek/RunState.h
+/usr/include/zeek/ScannedFile.h
+/usr/include/zeek/Scope.h
+/usr/include/zeek/ScriptCoverageManager.h
+/usr/include/zeek/SerializationFormat.h
+/usr/include/zeek/Sessions.h
+/usr/include/zeek/SmithWaterman.h
+/usr/include/zeek/Stats.h
+/usr/include/zeek/Stmt.h
+/usr/include/zeek/StmtEnums.h
+/usr/include/zeek/Tag.h
+/usr/include/zeek/Timer.h
+/usr/include/zeek/Traverse.h
+/usr/include/zeek/TraverseTypes.h
+/usr/include/zeek/Trigger.h
+/usr/include/zeek/TunnelEncapsulation.h
+/usr/include/zeek/Type.h
+/usr/include/zeek/UID.h
+/usr/include/zeek/Val.h
+/usr/include/zeek/Var.h
+/usr/include/zeek/WeirdState.h
+/usr/include/zeek/ZeekArgs.h
+/usr/include/zeek/ZeekList.h
+/usr/include/zeek/ZeekString.h
+/usr/include/zeek/analyzer/Analyzer.h
+/usr/include/zeek/analyzer/Component.h
+/usr/include/zeek/analyzer/Manager.h
+/usr/include/zeek/analyzer/Tag.h
+/usr/include/zeek/analyzer/analyzer.bif.h
+/usr/include/zeek/analyzer/protocol/asn1/asn1.pac
+/usr/include/zeek/analyzer/protocol/ayiya/AYIYA.h
+/usr/include/zeek/analyzer/protocol/ayiya/ayiya-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ayiya/ayiya-protocol.pac
+/usr/include/zeek/analyzer/protocol/ayiya/ayiya.pac
+/usr/include/zeek/analyzer/protocol/bittorrent/BitTorrent.h
+/usr/include/zeek/analyzer/protocol/bittorrent/BitTorrentTracker.h
+/usr/include/zeek/analyzer/protocol/bittorrent/bittorrent-analyzer.pac
+/usr/include/zeek/analyzer/protocol/bittorrent/bittorrent-protocol.pac
+/usr/include/zeek/analyzer/protocol/bittorrent/bittorrent.pac
+/usr/include/zeek/analyzer/protocol/bittorrent/events.bif.h
+/usr/include/zeek/analyzer/protocol/conn-size/ConnSize.h
+/usr/include/zeek/analyzer/protocol/conn-size/events.bif.h
+/usr/include/zeek/analyzer/protocol/conn-size/functions.bif.h
+/usr/include/zeek/analyzer/protocol/dce-rpc/DCE_RPC.h
+/usr/include/zeek/analyzer/protocol/dce-rpc/consts.bif.h
+/usr/include/zeek/analyzer/protocol/dce-rpc/dce_rpc-analyzer.pac
+/usr/include/zeek/analyzer/protocol/dce-rpc/dce_rpc-auth.pac
+/usr/include/zeek/analyzer/protocol/dce-rpc/dce_rpc-protocol.pac
+/usr/include/zeek/analyzer/protocol/dce-rpc/dce_rpc.pac
+/usr/include/zeek/analyzer/protocol/dce-rpc/endpoint-atsvc.pac
+/usr/include/zeek/analyzer/protocol/dce-rpc/endpoint-epmapper.pac
+/usr/include/zeek/analyzer/protocol/dce-rpc/events.bif.h
+/usr/include/zeek/analyzer/protocol/dce-rpc/types.bif.h
+/usr/include/zeek/analyzer/protocol/dhcp/DHCP.h
+/usr/include/zeek/analyzer/protocol/dhcp/dhcp-analyzer.pac
+/usr/include/zeek/analyzer/protocol/dhcp/dhcp-options.pac
+/usr/include/zeek/analyzer/protocol/dhcp/dhcp-protocol.pac
+/usr/include/zeek/analyzer/protocol/dhcp/dhcp.pac
+/usr/include/zeek/analyzer/protocol/dhcp/events.bif.h
+/usr/include/zeek/analyzer/protocol/dhcp/types.bif.h
+/usr/include/zeek/analyzer/protocol/dnp3/DNP3.h
+/usr/include/zeek/analyzer/protocol/dnp3/dnp3-analyzer.pac
+/usr/include/zeek/analyzer/protocol/dnp3/dnp3-objects.pac
+/usr/include/zeek/analyzer/protocol/dnp3/dnp3-protocol.pac
+/usr/include/zeek/analyzer/protocol/dnp3/dnp3.pac
+/usr/include/zeek/analyzer/protocol/dnp3/events.bif.h
+/usr/include/zeek/analyzer/protocol/dns/DNS.h
+/usr/include/zeek/analyzer/protocol/dns/events.bif.h
+/usr/include/zeek/analyzer/protocol/file/File.h
+/usr/include/zeek/analyzer/protocol/file/events.bif.h
+/usr/include/zeek/analyzer/protocol/finger/Finger.h
+/usr/include/zeek/analyzer/protocol/finger/events.bif.h
+/usr/include/zeek/analyzer/protocol/ftp/FTP.h
+/usr/include/zeek/analyzer/protocol/ftp/events.bif.h
+/usr/include/zeek/analyzer/protocol/ftp/functions.bif.h
+/usr/include/zeek/analyzer/protocol/gnutella/Gnutella.h
+/usr/include/zeek/analyzer/protocol/gnutella/events.bif.h
+/usr/include/zeek/analyzer/protocol/gssapi/GSSAPI.h
+/usr/include/zeek/analyzer/protocol/gssapi/events.bif.h
+/usr/include/zeek/analyzer/protocol/gssapi/gssapi-analyzer.pac
+/usr/include/zeek/analyzer/protocol/gssapi/gssapi-protocol.pac
+/usr/include/zeek/analyzer/protocol/gssapi/gssapi.pac
+/usr/include/zeek/analyzer/protocol/gtpv1/GTPv1.h
+/usr/include/zeek/analyzer/protocol/gtpv1/events.bif.h
+/usr/include/zeek/analyzer/protocol/gtpv1/gtpv1-analyzer.pac
+/usr/include/zeek/analyzer/protocol/gtpv1/gtpv1-protocol.pac
+/usr/include/zeek/analyzer/protocol/gtpv1/gtpv1.pac
+/usr/include/zeek/analyzer/protocol/http/HTTP.h
+/usr/include/zeek/analyzer/protocol/http/events.bif.h
+/usr/include/zeek/analyzer/protocol/http/functions.bif.h
+/usr/include/zeek/analyzer/protocol/icmp/ICMP.h
+/usr/include/zeek/analyzer/protocol/icmp/events.bif.h
+/usr/include/zeek/analyzer/protocol/ident/Ident.h
+/usr/include/zeek/analyzer/protocol/ident/events.bif.h
+/usr/include/zeek/analyzer/protocol/imap/IMAP.h
+/usr/include/zeek/analyzer/protocol/imap/events.bif.h
+/usr/include/zeek/analyzer/protocol/imap/imap-analyzer.pac
+/usr/include/zeek/analyzer/protocol/imap/imap-protocol.pac
+/usr/include/zeek/analyzer/protocol/imap/imap.pac
+/usr/include/zeek/analyzer/protocol/irc/IRC.h
+/usr/include/zeek/analyzer/protocol/irc/events.bif.h
+/usr/include/zeek/analyzer/protocol/krb/KRB.h
+/usr/include/zeek/analyzer/protocol/krb/KRB_TCP.h
+/usr/include/zeek/analyzer/protocol/krb/events.bif.h
+/usr/include/zeek/analyzer/protocol/krb/krb-analyzer.pac
+/usr/include/zeek/analyzer/protocol/krb/krb-asn1.pac
+/usr/include/zeek/analyzer/protocol/krb/krb-defs.pac
+/usr/include/zeek/analyzer/protocol/krb/krb-padata.pac
+/usr/include/zeek/analyzer/protocol/krb/krb-protocol.pac
+/usr/include/zeek/analyzer/protocol/krb/krb-types.pac
+/usr/include/zeek/analyzer/protocol/krb/krb.pac
+/usr/include/zeek/analyzer/protocol/krb/krb_TCP.pac
+/usr/include/zeek/analyzer/protocol/krb/types.bif.h
+/usr/include/zeek/analyzer/protocol/login/Login.h
+/usr/include/zeek/analyzer/protocol/login/NVT.h
+/usr/include/zeek/analyzer/protocol/login/RSH.h
+/usr/include/zeek/analyzer/protocol/login/Rlogin.h
+/usr/include/zeek/analyzer/protocol/login/Telnet.h
+/usr/include/zeek/analyzer/protocol/login/events.bif.h
+/usr/include/zeek/analyzer/protocol/login/functions.bif.h
+/usr/include/zeek/analyzer/protocol/mime/MIME.h
+/usr/include/zeek/analyzer/protocol/mime/events.bif.h
+/usr/include/zeek/analyzer/protocol/modbus/Modbus.h
+/usr/include/zeek/analyzer/protocol/modbus/events.bif.h
+/usr/include/zeek/analyzer/protocol/modbus/modbus-analyzer.pac
+/usr/include/zeek/analyzer/protocol/modbus/modbus-protocol.pac
+/usr/include/zeek/analyzer/protocol/modbus/modbus.pac
+/usr/include/zeek/analyzer/protocol/mqtt/MQTT.h
+/usr/include/zeek/analyzer/protocol/mqtt/commands/connack.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/connect.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/disconnect.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/pingreq.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/pingresp.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/puback.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/pubcomp.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/publish.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/pubrec.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/pubrel.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/suback.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/subscribe.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/unsuback.pac
+/usr/include/zeek/analyzer/protocol/mqtt/commands/unsubscribe.pac
+/usr/include/zeek/analyzer/protocol/mqtt/events.bif.h
+/usr/include/zeek/analyzer/protocol/mqtt/mqtt-protocol.pac
+/usr/include/zeek/analyzer/protocol/mqtt/mqtt.pac
+/usr/include/zeek/analyzer/protocol/mqtt/types.bif.h
+/usr/include/zeek/analyzer/protocol/mysql/MySQL.h
+/usr/include/zeek/analyzer/protocol/mysql/events.bif.h
+/usr/include/zeek/analyzer/protocol/mysql/mysql-analyzer.pac
+/usr/include/zeek/analyzer/protocol/mysql/mysql-protocol.pac
+/usr/include/zeek/analyzer/protocol/mysql/mysql.pac
+/usr/include/zeek/analyzer/protocol/ncp/NCP.h
+/usr/include/zeek/analyzer/protocol/ncp/consts.bif.h
+/usr/include/zeek/analyzer/protocol/ncp/events.bif.h
+/usr/include/zeek/analyzer/protocol/ncp/ncp.pac
+/usr/include/zeek/analyzer/protocol/netbios/NetbiosSSN.h
+/usr/include/zeek/analyzer/protocol/netbios/events.bif.h
+/usr/include/zeek/analyzer/protocol/netbios/functions.bif.h
+/usr/include/zeek/analyzer/protocol/ntlm/NTLM.h
+/usr/include/zeek/analyzer/protocol/ntlm/events.bif.h
+/usr/include/zeek/analyzer/protocol/ntlm/ntlm-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ntlm/ntlm-protocol.pac
+/usr/include/zeek/analyzer/protocol/ntlm/ntlm.pac
+/usr/include/zeek/analyzer/protocol/ntlm/types.bif.h
+/usr/include/zeek/analyzer/protocol/ntp/NTP.h
+/usr/include/zeek/analyzer/protocol/ntp/events.bif.h
+/usr/include/zeek/analyzer/protocol/ntp/ntp-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ntp/ntp-mode7.pac
+/usr/include/zeek/analyzer/protocol/ntp/ntp-protocol.pac
+/usr/include/zeek/analyzer/protocol/ntp/ntp.pac
+/usr/include/zeek/analyzer/protocol/ntp/types.bif.h
+/usr/include/zeek/analyzer/protocol/pia/PIA.h
+/usr/include/zeek/analyzer/protocol/pop3/POP3.h
+/usr/include/zeek/analyzer/protocol/pop3/events.bif.h
+/usr/include/zeek/analyzer/protocol/radius/RADIUS.h
+/usr/include/zeek/analyzer/protocol/radius/events.bif.h
+/usr/include/zeek/analyzer/protocol/radius/radius-analyzer.pac
+/usr/include/zeek/analyzer/protocol/radius/radius-protocol.pac
+/usr/include/zeek/analyzer/protocol/radius/radius.pac
+/usr/include/zeek/analyzer/protocol/rdp/RDP.h
+/usr/include/zeek/analyzer/protocol/rdp/RDPEUDP.h
+/usr/include/zeek/analyzer/protocol/rdp/events.bif.h
+/usr/include/zeek/analyzer/protocol/rdp/rdp-analyzer.pac
+/usr/include/zeek/analyzer/protocol/rdp/rdp-protocol.pac
+/usr/include/zeek/analyzer/protocol/rdp/rdp.pac
+/usr/include/zeek/analyzer/protocol/rdp/rdpeudp-analyzer.pac
+/usr/include/zeek/analyzer/protocol/rdp/rdpeudp-protocol.pac
+/usr/include/zeek/analyzer/protocol/rdp/rdpeudp.pac
+/usr/include/zeek/analyzer/protocol/rdp/types.bif.h
+/usr/include/zeek/analyzer/protocol/rfb/RFB.h
+/usr/include/zeek/analyzer/protocol/rfb/events.bif.h
+/usr/include/zeek/analyzer/protocol/rfb/rfb-analyzer.pac
+/usr/include/zeek/analyzer/protocol/rfb/rfb-protocol.pac
+/usr/include/zeek/analyzer/protocol/rfb/rfb.pac
+/usr/include/zeek/analyzer/protocol/rpc/MOUNT.h
+/usr/include/zeek/analyzer/protocol/rpc/NFS.h
+/usr/include/zeek/analyzer/protocol/rpc/Portmap.h
+/usr/include/zeek/analyzer/protocol/rpc/RPC.h
+/usr/include/zeek/analyzer/protocol/rpc/XDR.h
+/usr/include/zeek/analyzer/protocol/rpc/events.bif.h
+/usr/include/zeek/analyzer/protocol/sip/SIP.h
+/usr/include/zeek/analyzer/protocol/sip/SIP_TCP.h
+/usr/include/zeek/analyzer/protocol/sip/events.bif.h
+/usr/include/zeek/analyzer/protocol/sip/sip-analyzer.pac
+/usr/include/zeek/analyzer/protocol/sip/sip-protocol.pac
+/usr/include/zeek/analyzer/protocol/sip/sip.pac
+/usr/include/zeek/analyzer/protocol/sip/sip_TCP.pac
+/usr/include/zeek/analyzer/protocol/smb/SMB.h
+/usr/include/zeek/analyzer/protocol/smb/consts.bif.h
+/usr/include/zeek/analyzer/protocol/smb/events.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb-common.pac
+/usr/include/zeek/analyzer/protocol/smb/smb-gssapi.pac
+/usr/include/zeek/analyzer/protocol/smb/smb-mailslot.pac
+/usr/include/zeek/analyzer/protocol/smb/smb-pipe.pac
+/usr/include/zeek/analyzer/protocol/smb/smb-strings.pac
+/usr/include/zeek/analyzer/protocol/smb/smb-time.pac
+/usr/include/zeek/analyzer/protocol/smb/smb.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-check-directory.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-close.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-create-directory.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-echo.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-locking-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-logoff-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-negotiate.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-nt-cancel.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-nt-create-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-nt-transact.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-query-information.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-read-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-session-setup-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-transaction-secondary.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-transaction.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-transaction2-secondary.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-transaction2.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-tree-connect-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-tree-disconnect.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-com-write-andx.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1-protocol.pac
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_check_directory.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_close.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_create_directory.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_echo.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_logoff_andx.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_negotiate.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_nt_cancel.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_nt_create_andx.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_query_information.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_read_andx.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_session_setup_andx.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_transaction.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_transaction2.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_transaction2_secondary.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_transaction_secondary.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_tree_connect_andx.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_tree_disconnect.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_com_write_andx.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb1_events.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-close.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-create.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-ioctl.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-lock.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-negotiate.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-read.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-session-setup.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-set-info.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-transform-header.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-tree-connect.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-tree-disconnect.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-com-write.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2-protocol.pac
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_close.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_create.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_negotiate.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_read.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_session_setup.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_set_info.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_transform_header.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_tree_connect.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_tree_disconnect.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_com_write.bif.h
+/usr/include/zeek/analyzer/protocol/smb/smb2_events.bif.h
+/usr/include/zeek/analyzer/protocol/smb/types.bif.h
+/usr/include/zeek/analyzer/protocol/smtp/SMTP.h
+/usr/include/zeek/analyzer/protocol/smtp/events.bif.h
+/usr/include/zeek/analyzer/protocol/smtp/functions.bif.h
+/usr/include/zeek/analyzer/protocol/snmp/SNMP.h
+/usr/include/zeek/analyzer/protocol/snmp/events.bif.h
+/usr/include/zeek/analyzer/protocol/snmp/snmp-analyzer.pac
+/usr/include/zeek/analyzer/protocol/snmp/snmp-protocol.pac
+/usr/include/zeek/analyzer/protocol/snmp/snmp.pac
+/usr/include/zeek/analyzer/protocol/snmp/types.bif.h
+/usr/include/zeek/analyzer/protocol/socks/SOCKS.h
+/usr/include/zeek/analyzer/protocol/socks/events.bif.h
+/usr/include/zeek/analyzer/protocol/socks/socks-analyzer.pac
+/usr/include/zeek/analyzer/protocol/socks/socks-protocol.pac
+/usr/include/zeek/analyzer/protocol/socks/socks.pac
+/usr/include/zeek/analyzer/protocol/ssh/SSH.h
+/usr/include/zeek/analyzer/protocol/ssh/consts.pac
+/usr/include/zeek/analyzer/protocol/ssh/events.bif.h
+/usr/include/zeek/analyzer/protocol/ssh/ssh-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ssh/ssh-protocol.pac
+/usr/include/zeek/analyzer/protocol/ssh/ssh.pac
+/usr/include/zeek/analyzer/protocol/ssh/types.bif.h
+/usr/include/zeek/analyzer/protocol/ssl/DTLS.h
+/usr/include/zeek/analyzer/protocol/ssl/SSL.h
+/usr/include/zeek/analyzer/protocol/ssl/consts.bif.h
+/usr/include/zeek/analyzer/protocol/ssl/dtls-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ssl/dtls-protocol.pac
+/usr/include/zeek/analyzer/protocol/ssl/dtls.pac
+/usr/include/zeek/analyzer/protocol/ssl/events.bif.h
+/usr/include/zeek/analyzer/protocol/ssl/functions.bif.h
+/usr/include/zeek/analyzer/protocol/ssl/proc-certificate.pac
+/usr/include/zeek/analyzer/protocol/ssl/proc-client-hello.pac
+/usr/include/zeek/analyzer/protocol/ssl/proc-server-hello.pac
+/usr/include/zeek/analyzer/protocol/ssl/ssl-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ssl/ssl-defs.pac
+/usr/include/zeek/analyzer/protocol/ssl/ssl-dtls-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ssl/ssl-dtls-protocol.pac
+/usr/include/zeek/analyzer/protocol/ssl/ssl-protocol.pac
+/usr/include/zeek/analyzer/protocol/ssl/ssl.pac
+/usr/include/zeek/analyzer/protocol/ssl/tls-handshake-analyzer.pac
+/usr/include/zeek/analyzer/protocol/ssl/tls-handshake-protocol.pac
+/usr/include/zeek/analyzer/protocol/ssl/tls-handshake-signed_certificate_timestamp.pac
+/usr/include/zeek/analyzer/protocol/ssl/tls-handshake.pac
+/usr/include/zeek/analyzer/protocol/ssl/types.bif.h
+/usr/include/zeek/analyzer/protocol/stepping-stone/SteppingStone.h
+/usr/include/zeek/analyzer/protocol/stepping-stone/events.bif.h
+/usr/include/zeek/analyzer/protocol/syslog/Syslog.h
+/usr/include/zeek/analyzer/protocol/syslog/events.bif.h
+/usr/include/zeek/analyzer/protocol/syslog/syslog-analyzer.pac
+/usr/include/zeek/analyzer/protocol/syslog/syslog-protocol.pac
+/usr/include/zeek/analyzer/protocol/syslog/syslog.pac
+/usr/include/zeek/analyzer/protocol/tcp/ContentLine.h
+/usr/include/zeek/analyzer/protocol/tcp/Stats.h
+/usr/include/zeek/analyzer/protocol/tcp/TCP.h
+/usr/include/zeek/analyzer/protocol/tcp/TCP_Endpoint.h
+/usr/include/zeek/analyzer/protocol/tcp/TCP_Flags.h
+/usr/include/zeek/analyzer/protocol/tcp/TCP_Reassembler.h
+/usr/include/zeek/analyzer/protocol/tcp/events.bif.h
+/usr/include/zeek/analyzer/protocol/tcp/functions.bif.h
+/usr/include/zeek/analyzer/protocol/tcp/types.bif.h
+/usr/include/zeek/analyzer/protocol/teredo/Teredo.h
+/usr/include/zeek/analyzer/protocol/teredo/events.bif.h
+/usr/include/zeek/analyzer/protocol/udp/UDP.h
+/usr/include/zeek/analyzer/protocol/udp/events.bif.h
+/usr/include/zeek/analyzer/protocol/vxlan/VXLAN.h
+/usr/include/zeek/analyzer/protocol/vxlan/events.bif.h
+/usr/include/zeek/analyzer/protocol/xmpp/XMPP.h
+/usr/include/zeek/analyzer/protocol/xmpp/events.bif.h
+/usr/include/zeek/analyzer/protocol/xmpp/xmpp-analyzer.pac
+/usr/include/zeek/analyzer/protocol/xmpp/xmpp-protocol.pac
+/usr/include/zeek/analyzer/protocol/xmpp/xmpp.pac
+/usr/include/zeek/analyzer/protocol/zip/ZIP.h
+/usr/include/zeek/binpac-lib.pac
+/usr/include/zeek/binpac.pac
+/usr/include/zeek/binpac_bro.h
+/usr/include/zeek/binpac_zeek-lib.pac
+/usr/include/zeek/binpac_zeek.h
+/usr/include/zeek/bro.pac
+/usr/include/zeek/bro_inet_ntop.h
+/usr/include/zeek/broker/Data.h
+/usr/include/zeek/broker/Manager.h
+/usr/include/zeek/broker/Store.h
+/usr/include/zeek/broker/comm.bif.h
+/usr/include/zeek/broker/data.bif.h
+/usr/include/zeek/broker/messaging.bif.h
+/usr/include/zeek/broker/store.bif.h
+/usr/include/zeek/bsd-getopt-long.h
+/usr/include/zeek/const.bif.func_h
+/usr/include/zeek/const.bif.netvar_h
+/usr/include/zeek/digest.h
+/usr/include/zeek/event.bif.func_h
+/usr/include/zeek/event.bif.netvar_h
+/usr/include/zeek/file_analysis/Analyzer.h
+/usr/include/zeek/file_analysis/AnalyzerSet.h
+/usr/include/zeek/file_analysis/Component.h
+/usr/include/zeek/file_analysis/File.h
+/usr/include/zeek/file_analysis/FileReassembler.h
+/usr/include/zeek/file_analysis/FileTimer.h
+/usr/include/zeek/file_analysis/Manager.h
+/usr/include/zeek/file_analysis/Tag.h
+/usr/include/zeek/file_analysis/analyzer/data_event/DataEvent.h
+/usr/include/zeek/file_analysis/analyzer/entropy/Entropy.h
+/usr/include/zeek/file_analysis/analyzer/entropy/events.bif.h
+/usr/include/zeek/file_analysis/analyzer/extract/Extract.h
+/usr/include/zeek/file_analysis/analyzer/extract/events.bif.h
+/usr/include/zeek/file_analysis/analyzer/extract/functions.bif.h
+/usr/include/zeek/file_analysis/analyzer/hash/Hash.h
+/usr/include/zeek/file_analysis/analyzer/hash/events.bif.h
+/usr/include/zeek/file_analysis/analyzer/pe/PE.h
+/usr/include/zeek/file_analysis/analyzer/pe/events.bif.h
+/usr/include/zeek/file_analysis/analyzer/pe/pe-analyzer.pac
+/usr/include/zeek/file_analysis/analyzer/pe/pe-file-headers.pac
+/usr/include/zeek/file_analysis/analyzer/pe/pe-file-idata.pac
+/usr/include/zeek/file_analysis/analyzer/pe/pe-file-types.pac
+/usr/include/zeek/file_analysis/analyzer/pe/pe-file.pac
+/usr/include/zeek/file_analysis/analyzer/pe/pe.pac
+/usr/include/zeek/file_analysis/analyzer/unified2/Unified2.h
+/usr/include/zeek/file_analysis/analyzer/unified2/events.bif.h
+/usr/include/zeek/file_analysis/analyzer/unified2/types.bif.h
+/usr/include/zeek/file_analysis/analyzer/unified2/unified2-analyzer.pac
+/usr/include/zeek/file_analysis/analyzer/unified2/unified2-file.pac
+/usr/include/zeek/file_analysis/analyzer/unified2/unified2.pac
+/usr/include/zeek/file_analysis/analyzer/x509/OCSP.h
+/usr/include/zeek/file_analysis/analyzer/x509/X509.h
+/usr/include/zeek/file_analysis/analyzer/x509/X509Common.h
+/usr/include/zeek/file_analysis/analyzer/x509/events.bif.h
+/usr/include/zeek/file_analysis/analyzer/x509/functions.bif.h
+/usr/include/zeek/file_analysis/analyzer/x509/ocsp_events.bif.h
+/usr/include/zeek/file_analysis/analyzer/x509/types.bif.h
+/usr/include/zeek/file_analysis/analyzer/x509/x509-extension.pac
+/usr/include/zeek/file_analysis/analyzer/x509/x509-signed_certificate_timestamp.pac
+/usr/include/zeek/file_analysis/file_analysis.bif.h
+/usr/include/zeek/fuzzers/FuzzBuffer.h
+/usr/include/zeek/fuzzers/fuzzer-setup.h
+/usr/include/zeek/input.h
+/usr/include/zeek/input/Component.h
+/usr/include/zeek/input/Manager.h
+/usr/include/zeek/input/ReaderBackend.h
+/usr/include/zeek/input/ReaderFrontend.h
+/usr/include/zeek/input/Tag.h
+/usr/include/zeek/input/input.bif.h
+/usr/include/zeek/input/readers/ascii/Ascii.h
+/usr/include/zeek/input/readers/ascii/ascii.bif.h
+/usr/include/zeek/input/readers/benchmark/Benchmark.h
+/usr/include/zeek/input/readers/benchmark/benchmark.bif.h
+/usr/include/zeek/input/readers/binary/Binary.h
+/usr/include/zeek/input/readers/binary/binary.bif.h
+/usr/include/zeek/input/readers/config/Config.h
+/usr/include/zeek/input/readers/config/config.bif.h
+/usr/include/zeek/input/readers/raw/Plugin.h
+/usr/include/zeek/input/readers/raw/Raw.h
+/usr/include/zeek/input/readers/raw/raw.bif.h
+/usr/include/zeek/input/readers/sqlite/SQLite.h
+/usr/include/zeek/input/readers/sqlite/sqlite.bif.h
+/usr/include/zeek/iosource/BPF_Program.h
+/usr/include/zeek/iosource/Component.h
+/usr/include/zeek/iosource/IOSource.h
+/usr/include/zeek/iosource/Manager.h
+/usr/include/zeek/iosource/Packet.h
+/usr/include/zeek/iosource/PktDumper.h
+/usr/include/zeek/iosource/PktSrc.h
+/usr/include/zeek/iosource/pcap/Dumper.h
+/usr/include/zeek/iosource/pcap/Source.h
+/usr/include/zeek/iosource/pcap/pcap.bif.h
+/usr/include/zeek/logging/Component.h
+/usr/include/zeek/logging/Manager.h
+/usr/include/zeek/logging/Tag.h
+/usr/include/zeek/logging/WriterBackend.h
+/usr/include/zeek/logging/WriterFrontend.h
+/usr/include/zeek/logging/logging.bif.h
+/usr/include/zeek/logging/writers/ascii/Ascii.h
+/usr/include/zeek/logging/writers/ascii/ascii.bif.h
+/usr/include/zeek/logging/writers/none/None.h
+/usr/include/zeek/logging/writers/none/none.bif.h
+/usr/include/zeek/logging/writers/sqlite/SQLite.h
+/usr/include/zeek/logging/writers/sqlite/sqlite.bif.h
+/usr/include/zeek/modp_numtoa.h
+/usr/include/zeek/module_util.h
+/usr/include/zeek/nb_dns.h
+/usr/include/zeek/net_util.h
+/usr/include/zeek/option.bif.func_h
+/usr/include/zeek/option.bif.netvar_h
+/usr/include/zeek/packet_analysis.bif.func_h
+/usr/include/zeek/packet_analysis.bif.netvar_h
+/usr/include/zeek/packet_analysis/Analyzer.h
+/usr/include/zeek/packet_analysis/Component.h
+/usr/include/zeek/packet_analysis/Dispatcher.h
+/usr/include/zeek/packet_analysis/Manager.h
+/usr/include/zeek/packet_analysis/Tag.h
+/usr/include/zeek/packet_analysis/protocol/arp/ARP.h
+/usr/include/zeek/packet_analysis/protocol/arp/events.bif.h
+/usr/include/zeek/packet_analysis/protocol/ethernet/Ethernet.h
+/usr/include/zeek/packet_analysis/protocol/fddi/FDDI.h
+/usr/include/zeek/packet_analysis/protocol/gre/GRE.h
+/usr/include/zeek/packet_analysis/protocol/ieee802_11/IEEE802_11.h
+/usr/include/zeek/packet_analysis/protocol/ieee802_11_radio/IEEE802_11_Radio.h
+/usr/include/zeek/packet_analysis/protocol/ip/IP.h
+/usr/include/zeek/packet_analysis/protocol/iptunnel/IPTunnel.h
+/usr/include/zeek/packet_analysis/protocol/linux_sll/LinuxSLL.h
+/usr/include/zeek/packet_analysis/protocol/mpls/MPLS.h
+/usr/include/zeek/packet_analysis/protocol/nflog/NFLog.h
+/usr/include/zeek/packet_analysis/protocol/null/Null.h
+/usr/include/zeek/packet_analysis/protocol/ppp_serial/PPPSerial.h
+/usr/include/zeek/packet_analysis/protocol/pppoe/PPPoE.h
+/usr/include/zeek/packet_analysis/protocol/root/Root.h
+/usr/include/zeek/packet_analysis/protocol/skip/Skip.h
+/usr/include/zeek/packet_analysis/protocol/vlan/VLAN.h
+/usr/include/zeek/packet_analysis/protocol/wrapper/Wrapper.h
+/usr/include/zeek/patricia.h
+/usr/include/zeek/plugin/Component.h
+/usr/include/zeek/plugin/ComponentManager.h
+/usr/include/zeek/plugin/Manager.h
+/usr/include/zeek/plugin/Plugin.h
+/usr/include/zeek/plugin/TaggedComponent.h
+/usr/include/zeek/probabilistic/BitVector.h
+/usr/include/zeek/probabilistic/BloomFilter.h
+/usr/include/zeek/probabilistic/CardinalityCounter.h
+/usr/include/zeek/probabilistic/CounterVector.h
+/usr/include/zeek/probabilistic/Hasher.h
+/usr/include/zeek/probabilistic/Topk.h
+/usr/include/zeek/probabilistic/bloom-filter.bif.h
+/usr/include/zeek/probabilistic/cardinality-counter.bif.h
+/usr/include/zeek/probabilistic/top-k.bif.h
+/usr/include/zeek/reporter.bif.func_h
+/usr/include/zeek/reporter.bif.netvar_h
+/usr/include/zeek/setsignal.h
+/usr/include/zeek/stats.bif.func_h
+/usr/include/zeek/stats.bif.netvar_h
+/usr/include/zeek/strings.bif.func_h
+/usr/include/zeek/strings.bif.netvar_h
+/usr/include/zeek/supervisor.bif.func_h
+/usr/include/zeek/supervisor.bif.netvar_h
+/usr/include/zeek/supervisor/Supervisor.h
+/usr/include/zeek/threading/BasicThread.h
+/usr/include/zeek/threading/Formatter.h
+/usr/include/zeek/threading/Manager.h
+/usr/include/zeek/threading/MsgThread.h
+/usr/include/zeek/threading/Queue.h
+/usr/include/zeek/threading/SerialTypes.h
+/usr/include/zeek/threading/formatters/Ascii.h
+/usr/include/zeek/threading/formatters/JSON.h
+/usr/include/zeek/types.bif.func_h
+/usr/include/zeek/types.bif.netvar_h
+/usr/include/zeek/util.h
+/usr/include/zeek/zeek-affinity.h
+/usr/include/zeek/zeek-bif.h
+/usr/include/zeek/zeek-config.h
+/usr/include/zeek/zeek-setup.h
+/usr/include/zeek/zeek.bif.func_h
+/usr/include/zeek/zeek.bif.netvar_h
+/usr/include/zeek/zeek.pac
+/usr/include/zeek/zeekygen/Configuration.h
+/usr/include/zeek/zeekygen/IdentifierInfo.h
+/usr/include/zeek/zeekygen/Info.h
+/usr/include/zeek/zeekygen/Manager.h
+/usr/include/zeek/zeekygen/PackageInfo.h
+/usr/include/zeek/zeekygen/ReStructuredTextTable.h
+/usr/include/zeek/zeekygen/ScriptInfo.h
+/usr/include/zeek/zeekygen/Target.h
+/usr/include/zeek/zeekygen/utils.h
+/usr/include/zeek/zeekygen/zeekygen.bif.h
+/usr/lib64/cmake/CAF/CAFConfig.cmake
+/usr/lib64/cmake/CAF/CAFConfigVersion.cmake
+/usr/lib64/cmake/CAF/CAFTargets-relwithdebinfo.cmake
+/usr/lib64/cmake/CAF/CAFTargets.cmake
+/usr/lib64/libbinpac.so
+/usr/lib64/libbroker.so
+/usr/lib64/libcaf_core.so
+/usr/lib64/libcaf_io.so
+/usr/lib64/libcaf_openssl.so
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libbinpac.so.0
+/usr/lib64/libbinpac.so.0.57
+/usr/lib64/libbroker.so.2.0
+/usr/lib64/libbroker.so.3
+/usr/lib64/libcaf_core.so.0.18.0
+/usr/lib64/libcaf_io.so.0.18.0
+/usr/lib64/libcaf_openssl.so.0.18.0
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/zeek/095bff679080110031d9603cd5678de136085197
+/usr/share/package-licenses/zeek/0c6ec50f76889bd113eacefe86f15b3dfcfb8e59
+/usr/share/package-licenses/zeek/0e0c1a21672c002945447e502e1fdce6c032dc12
+/usr/share/package-licenses/zeek/133d0a39b5e2b6fe1640fdf72b961ba0fe78d348
+/usr/share/package-licenses/zeek/1767b5180fbea2feaff4a90ecc7bd92effcf4458
+/usr/share/package-licenses/zeek/19ac7c04124b9f0a00b4e827a58cd368feba7b4a
+/usr/share/package-licenses/zeek/1d4719e04eaa4909ab5a59ef5cb04d2a5517716e
+/usr/share/package-licenses/zeek/38a91fe77596c51b40b5192189c1de2a1396e127
+/usr/share/package-licenses/zeek/3ab1c7ffea3eb25703969e96f8f4a62ba6e36345
+/usr/share/package-licenses/zeek/3d1626ff5f531f387f20f25b36500bbe1f960e3d
+/usr/share/package-licenses/zeek/3dbd61e2b2c71dcc658c3da90bacf2e15958075a
+/usr/share/package-licenses/zeek/47ab05791f28173ad2b82f25c2b5c7fc06252b4d
+/usr/share/package-licenses/zeek/5a2314153eadadc69258a9429104cd11804ea304
+/usr/share/package-licenses/zeek/5a7d7df655ba40478fae80a6abafc6afc36f9b6a
+/usr/share/package-licenses/zeek/5e33d4674a821a666e7bb1fb7717d193ac234713
+/usr/share/package-licenses/zeek/67de873c1e71bb7719e25d2209dc44bdfc755db4
+/usr/share/package-licenses/zeek/6808b97edf6d2c189571af702b95916168ff7db8
+/usr/share/package-licenses/zeek/6ebb0617457eb1bea6f5d6a8f29129a22f0ac1a1
+/usr/share/package-licenses/zeek/7ba045683ca423eb9191e47cd13b80d9f8133d98
+/usr/share/package-licenses/zeek/95b10a29e8110ff2823122f23729e173517a8a1e
+/usr/share/package-licenses/zeek/9f2826a006f7a635589133fda8e09ee646aae24e
+/usr/share/package-licenses/zeek/b413d9daa4f9c131505362b204d278b0cde8c661
+/usr/share/package-licenses/zeek/e85bbc8175bc6b4a99301cd29a2f05118656b547
+/usr/share/package-licenses/zeek/f2a190e0c1ddda28af4457907d2233f33d1f5fe5
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/trace-summary.1
+/usr/share/man/man8/zeek.8
+/usr/share/man/man8/zeekctl.8
+
+%files python
+%defattr(-,root,root,-)
+
+%files python3
+%defattr(-,root,root,-)
+/usr/lib/python3*/*
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libparaglob.a
