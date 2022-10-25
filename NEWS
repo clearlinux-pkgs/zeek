@@ -1,137 +1,641 @@
+
 This document summarizes the most important changes in the current Zeek
 release. For an exhaustive list of changes, see the ``CHANGES`` file
 (note that submodules, such as Broker, come with their own ``CHANGES``.)
 
-Zeek 4.0.7
+Zeek 5.0.2
 ==========
 
 This release fixes the following security issues:
 
-- Fix potential hang in the DNS analyzer when receiving a specially-crafted
-  packet. Due to the possibility of this happening with packets received
-  from the network, this is a potential DoS vulnerability.
+- Fix a possible overflow and crash in the ICMP analyzer when receiving a
+  specially crafted packet. Due to the possibility of this happening with
+  packets received from the network, this is a potential DoS vulnerability.
 
-  Thank you to Google's OSS-Fuzz project for reporting this vulernability.
+- Fix a possible overflow and crash in the IRC analyzer when receiving a
+  specially crafted packet. Due to the possibility of this happening with
+  packets received from the network, this is a potential DoS vulnerability.
+  Note that this requires the ``irc_whois_channel_line`` to be handled. This
+  event is not handled by default, so this is likely a low-severity issue.
+
+- Fix a possible overflow and crash in the SMB analyzer when receiving a
+  specially crafted packet. Due to the possibility of this happening with
+  packets received from the network, this is a potential DoS vulnerability.
+  Note that this requires the ``smb1_transaction_secondary_request`` to be
+  handled. This event is not handled by default, so this is likely a
+  low-severity issue.
+
+- Fix two possible crashes when converting IP headers for output via the
+  ``raw_packet`` event. Due to the possibility of this happening with packets
+  received from the network, this is a potential DoS vulnerability. Note that
+  the ``raw_packet`` event is not enabled by default so these are likely
+  low-severity issues.
 
 This release fixes the following bugs:
 
-- Fix issue with broken libpcaps that return repeat packets, most notably
-  the version provided with Myricom hardware.
+- Fix a bug that prevented Broker nodes to recover from OpenSSL errors.
 
-  https://github.com/zeek/zeek/issues/724
+- Fix handling of buffer sizes that caused Broker to stall despite having
+  sufficient capacity.
 
-Zeek 4.0.6
+- Fix an issue with signal handling that could prevent Zeek from exiting via
+  ctrl-c when reading scripts from stdin.
+
+Zeek 5.0.1
 ==========
 
 This release fixes the following security issues:
 
-- Fix potential unbounded state growth in the FTP analyzer when receiving
-  a specially-crafted stream of commands. This may lead to a buffer overflow
-  and cause Zeek to crash. Due to the possibility of this happening with
-  packets received from the network, this is a potential DoS vulnerabilty.
+- Fix a possible overflow and crash in the ARP analyzer when receiving a
+  specially crafted packet. Due to the possibility of this happening with
+  packets received from the network, this is a potential DoS vulnerability.
 
-  Thank you to Jason Ish at OISF for reporting this vulnerability.
+- Fix a possible overflow and crash in the Modbus analyzer when receiving a
+  specially crafted packet. Due to the possibility of this happening with
+  packets received from the network, this is a potential DoS vulnerability.
 
-This release fixes the following bugs:
+- Fix two possible crashes when converting IP headers for output via the
+  ``raw_packet`` event. Due to the possibility of this happening with packets
+  received from the network, this is a potential DoS vulnerability. Note that
+  the ``raw_packet`` event is not enabled by default so these are likely
+  low-severity issues.
 
-- Empty table constructors with &default attributes may cause a crash.
-
-  https://github.com/zeek/zeek/commit/18fe9d84f602c90724dcec0e349789932ab9f931
-
-- Fix a bug in ZAM when a function containing a loop is inlined.
-
-- Fix a number of bugs with robust dictionary iteration.
-
-  https://github.com/zeek/zeek/pull/2040
-
-- Fix missing "Reporter" entries when reporting hooks via `zeek -NN`.
-
-  https://github.com/zeek/zeek/issues/2052
-
-Zeek 4.0.5
-==========
-
-This release fixes the following bugs:
-
-- The highwayhash module was updated to fix a build failure on FreeBSD.
-
-  https://github.com/zeek/zeek/pull/1809
-
-- A number of fixes for various problems on the CI infrastructure.
-
-  https://github.com/zeek/zeek/pull/1809
-  https://github.com/zeek/zeek/pull/1579
-  https://github.com/zeek/zeek/commit/a84d1bffe9ff596b8d98dc6e9461ed8877141dbb
-  https://github.com/zeek/zeek/commit/33a4e1cb6657d0a01e69addf2af26dcdd9da1ab0
-
-- Fixed an issue with log rotation on Linux systems using shadow files.
-
-  https://github.com/zeek/zeek/pull/1817
-
-- Writers were not being cleaned up correctly when recreating log streams
-  with the same ID as an existing stream. This could lead to a crash.
-
-  https://github.com/zeek/zeek/pull/1877
-
-- IP packets with bad/incorrect IP header lengths were not reporting weirds
-  as they should be.
-
-  https://github.com/zeek/zeek/pull/1569
-
-Zeek 4.0.4
-==========
-
-This release fixes the following security issues:
-
-- Paths from log stream make it into system() unchecked, potentially leading
-  to commands being run on the system unintentionally. This requires either
-  bad scripting or a malicious package to be installed, and is considered
-  low severity.
-
-- Fix potential unbounded state growth in the PIA analyzer when receiving a
-  connection with either a large number of zero-length packets, or one which
-  continues ack-ing unseen segments. It is possible to run Zeek out of memory
-  in these instances and cause it to crash. Due to the possibility of this
+- Fix an abort related to an error related to the ordering of record fields when
+  processing DNS EDNS headers via events. Due to the possibility of this
   happening with packets received from the network, this is a potential DoS
-  vulnerability.
+  vulnerability. Note that the ``dns_EDNS`` events are not implemented by
+  default so this is likely a low-severity issue.
+
+  Thank you to Google's OSS-Fuzz project for reporting all of the above issues.
 
 This release fixes the following bugs:
 
-- The highwayhash submodule was updated to fix a build failure on FreeBSD 14.
+- Fix a number of typos in the weak-keys.zeek script in the SSL framework.
 
-  https://github.com/zeek/zeek/pull/1680
+  https://github.com/zeek/zeek/issues/2229
 
-- Packet sources that don't have a selectable file descriptor could
-  potentially prevent the network time from ever updating, which would have
-  adverse effects on the primary run loop such as preventing timers from
-  executing.
+- Fix build of internal Spicy when using the --disable-cpp-tests configure flag.
 
-  https://github.com/zeek/zeek/pull/1690
+  https://github.com/zeek/zeek/pull/2256
 
-- Specific conditions in the run loop could lead RotationTimers to get into
-  an infinite loop.
+- Avoid calling ``safe_realloc`` unnecessarily from ``ODesc::Grow()``, providing a
+  peformance improvement in some cases.
 
-  https://github.com/zeek/zeek/pull/1711
+  https://github.com/zeek/zeek/pull/2244
 
-- Specially crafted HTTP packets could avoid the HTTP analyzer.
+- Remove use of fallible ``get_conn_transport_proto()`` in ``analyzer_violation``
+  event handlers.
 
-  https://github.com/zeek/zeek/pull/1691
+  https://github.com/zeek/zeek/pull/2288
 
-- Zeekctl crashes using the `zeekctl status` command if the `StatusCmdShowAll`
-  option is set to `1` in zeekctl.cfg.
+- Remove a warning when receiving packets with invalid or unknown IP protocol
+  types, preventing it from spamming reporter.log.
 
-  https://github.com/zeek/zeek/pull/1734
+  https://github.com/zeek/zeek/commit/40b1452905c0eed4d96300ce1aaf87a08166e396
 
-- The `ignore_checksum_nets` option does not work correctly if configured
-  with multiple subnets.
+- Fix workers failing to peer with proxies if they take too long to start
 
-  https://github.com/zeek/zeek/pull/1778
-  https://github.com/zeek/zeek/commit/802dfd80c13c9c882a68dd9c41e67e8451c59031
+  https://github.com/zeek/zeek/issues/2334
 
-Zeek 4.0.3
+- Fix Zeek build failures when building against an external version of Spicy
+
+  https://github.com/zeek/zeek/pull/2364
+
+- Update Spicy to version 1.5.1 and spicy-plugin to 1.3.17.
+
+  https://github.com/zeek/zeek/pull/2368
+
+Zeek 5.0.0
 ==========
 
-This release fixes the following bugs:
+Breaking Changes
+----------------
+
+- Zeek now requires at least CMake version 3.15.0.
+
+- If Zeek is configured with support for included Spicy (the default) we now
+  require at least Flex version 2.6 and its development headers, at least Bison
+  version 3.3, and GCC version 8.3 or Clang version 9.0 or higher.
+
+- The script-land ``union`` and ``timer`` types have been removed. They haven't
+  had any actual semantics backing them for some time and shouldn't have
+  functioned in any useable way. We opted to skip the deprecation cycle for
+  these types for that reason.
+
+- Broker now uses a new network backend with a custom network protocol that is
+  incompatible with the pre-5.0 backend. In practice, this means Zeek 4.x will
+  not be able to exchange events with Zeek 5.x. Going forward, this new backend
+  will allow us to keep the Broker protocol more stable and add new capabilities
+  in a backwards compatible way.
+
+New Functionality
+-----------------
+
+- The Zeek cluster management framework now supports operational use of
+  single-instance clusters, meaning setups in which all Zeek cluster nodes
+  (manager, workers, etc) reside on a single machine. The framework builds upon
+  Zeek's Supervisor (``-j`` is a requirement) and includes three components:
+
+  (1) A cluster controller, loaded via ``policy/frameworks/management/controller`.
+      The controller is the central management entity for a Zeek cluster. It
+      interacts with one or more agents to enact instructions delivered by a
+      management client. The controller is stateful and can persist cluster
+      state to disk.
+
+  (2) One or more cluster agents, loaded via ``policy/frameworks/management/agent`.
+      Each agent assists the controller in managing the local instance (typically
+      a machine or container) of Zeek cluster nodes. Agents interact with the
+      local Supervisor to control nodes and peer directly with running Zeek
+      nodes via Broker to carry out node-local tasks.
+
+  (3) zeek-client, the cluster management client. A standalone client running
+      outside of Zeek, it's now installed by default, alongside the other
+      executables. The client supports uploading cluster configurations to the
+      controller, deploying them, retrieving them, checking cluster node status,
+      restarting individual cluster nodes, and retrieving the current value(s)
+      of global identifiers in one or more Zeek nodes.
+
+  Controller and agent come pre-configured for single-instance deployments of
+  Zeek clusters, with automated log rotation and archival via Zeek's
+  ``zeek-archiver`` tool. For further details on the framework, please refer
+  to the Zeek documentation.
+
+  zeekctl remains included and offers more knobs and features than the
+  management framework. It remains the recommended solution for multi-machine
+  clusters and those needing rich management capabilities.
+
+- Zeek now automatically warns about unused functions, hooks, and event
+  handlers.  The intent behind these checks is to catch instances where the
+  script writer has introduced typos in names, or has forgotten to remove
+  code that's no longer needed.
+
+  For functions and hooks, "unused" means the function/hook is not exported or
+  in the global scope (nor deprecated), and no "live" (i.e., not "unused")
+  function/hook/event handler calls it.  For event handlers, "unused" means
+  that the event engine does not generate the event, nor do any "live"
+  function/hook/event handler generates (and the event handler is not
+  deprecated).
+
+  The warnings can occasionally be or inappropriate or incorrect, such as due
+  to the use of conditional code (which Zeek does not try to incorporate
+  into its analysis), or events sent via Broker.  You can mark such instances
+  using the ``&is_used`` attribute to suppress the associated warning.
+  You can also suppress all such warnings using the ``--no-unused-warnings``
+  command-line option.
+
+- A new feature, ``--profile-scripts[=file]`` instructs Zeek to write (upon
+  termination) a profile of every function body to the given file (default:
+  stdout), along with some aggregate profiles. A function body is associated
+  with a function or a BiF (they can only have one), or a hook or event handler
+  (they can have multiple).  The profile is in TSV, quasi-Zeek-log format.  It
+  includes (1) the name of the script body, (2) its location, (3) its type
+  (e.g., "BiF" or "function"), (4) how many times it was called, (5) the total
+  CPU time that accumulated during its execution, (6) how much of that time was
+  due to execution of its "children" (other functions it called), (7) the total
+  memory allocated during its execution (approximately), and (8) how much of
+  that memory was due to its children.  Note that profiling is expensive and may
+  not be suitable for execution on live traffic.
+
+- Zeek now includes support for building Spicy and spicy-plugin as part of
+  Zeek. This feature is enabled by default, and can be turned off by passing the
+  ``--disable-spicy`` flag to ``./configure``.
+
+- Zeek now supports generation and replay of event traces via the new
+  ``--event-trace`` / ``-E`` command-line options. For details, see:
+  https://docs.zeek.org/en/master/quickstart.html#tracing-events
+
+- Zeek now features limited TLS decryption capabilities. This feature is
+  experimental and only works for TLS 1.2 connections that use the
+  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 ciphersuite. Furthermore Zeek requires
+  access to the pre-master secret of each TLS connection. Typically this
+  functionality will be most useful when analyzing trace-files where the TLS
+  client recorded the key material. For more details and examples how to use
+  this functionality, see the TLS Decryption documentation at
+  https://docs.zeek.org/en/master/frameworks/tls-decryption.html
+
+- Zeek now provides WebSocket support for exchanging events with external
+  clients. To enable it, call `Broker::listen_websocket()`.  Zeek will then
+  start listening on port 9997 for incoming WebSocket connections. Zeek/Broker
+  communicates via JSON messages. See the Broker documentation for a description
+  of the message format expected over these WebSocket connections at
+  https://docs.zeek.org/projects/broker/en/current/web-socket.html.
+
+- Compiling scripts to C++ (via ``-O gen-C++``) is now "feature complete", i.e.,
+  the compiler should be able to process any script - other than those
+  potentially affected by ``@if`` conditionals - regardless of which Zeek
+  language constructs it uses.  That said, such compilation remains
+  experimental and only lightly tested.
+
+- ZAM script optimization (``-O ZAM``) now includes some major performance
+  improvements.
+
+- The new --with-gen-zam configure flag and its corresponding GEN_ZAM_EXE_PATH
+  cmake variable allow reuse of a previously built Gen-ZAM code generator. This
+  aids cross-compilation: the Zeek build process normally compiles Gen-ZAM on
+  the fly, but when cross-compiling will do so for the target platform, breaking
+  its use on the host platform. Gen-ZAM is similar to binpac and bifcl in this
+  regard. Like binpac and bifcl, it's now also available as a standalone git
+  repository and hooked into the Zeek distribution as a submodule.
+
+- Zeek now uses the c-ares (https://c-ares.org) library for performing DNS
+  requests, replacing an old custom implementation of a DNS resolver. Switching
+  to this library simplifies the DNS code, adds support for IPv6 lookups, and
+  adds the ability to support more DNS request types in the future.
+
+- Two new BiFs, val_footprint() and global_container_footprints(), offer
+  substitutes for the deprecated val_size() and global_sizes() BiFs.  A value's
+  "footprint" is the number of elements it includes either directly or
+  indirectly.  The number is not meant to be precise, but rather comparable:
+  larger footprint correlates with more memory consumption.
+
+- The Supervisor features two new events, ``Supervisor::node_status`` and
+  ``SupervisorControl::node_status``, to notify recipients of the fact that the
+  stem process has (re-)started a node. The events indicate the node's name and
+  its new PID, reflecting the information the stem already shares with the
+  Supervisor core.
+
+- The new ``configure --statedir`` option lets you adjust the installation's
+  persistent state directory. It defaults to ``var/lib`` under your Zeek
+  installation's root directory.
+
+- The ``base/misc/installation.zeek`` script provides your Zeek installation's
+  key directories.
+
+- Zeek now lets you decrement Counting Bloom Filters using the new
+  ``bloomfilter_decrement`` BiF. Furthermore, two Bloom Filters can be
+  intersected using the new ``bloomfilter_intersect`` BiF.
+
+Changed Functionality
+---------------------
+
+- The behavior of the ``=``, ``+=``, and ``-=`` operators has been expanded and
+  unified. It now covers ``{ ... }`` initializer lists, supports cross-product
+  initialization, enables ``+=`` for table, set, vector and pattern values,
+  similarly allows ``-=`` for table and set values, and supports listing
+  multiple sets for ``+=`` initialization. For details, see:
+  https://docs.zeek.org/en/master/script-reference/operators.html#assignment-operators
+
+- The is_num(), is_alpha(), and is_alnum() BiFs now return F for the empty
+  string.
+
+- Type mismatch error messages now print the easier to understand type names,
+  instead of the fully expanded raw type.
+
+- Errors caused by setting a filter at start-up are now more informative about
+  what actually caused the error, including with the default ``ip or no ip``
+  filter.
+
+- Log messages about errors in input files are now more informative about where
+  errors occured.
+
+- The ``--enable-zeek-client`` configure flag has been removed and is now the
+  default. The new ``--disable-zeek-client`` flag allows users to skip
+  installation of the client.
+
+Deprecated Functionality
+------------------------
+
+- For developers of asynchronous BiFs, or other uses of ``when`` statement
+  triggers, the versions of ``Trigger::Cache`` and ``Trigger::Lookup`` that take
+  ``const CallExpr*`` parameters have been deprecated.  The replacements take
+  ``const void*`` parameters.  Usually all you'll need to do is replace previous
+  uses of ``Frame::GetCall`` with ``Frame::GetTriggerAssoc``.
+
+- The ``--caf-root`` option of ``zeek-config`` was made obsolete by the changes
+  to how we include CAF and has been marked as deprecated.
+
+Zeek 4.2.0
+==========
+
+Breaking Changes
+----------------
+
+- The existing ``Tag`` types in C++ (``zeek::Analyzer::Tag``, etc) have been
+  merged into a single type called ``zeek::Tag``. This is a breaking change, and
+  may result in plugins failing to build where they were relying on those types
+  being different for function overloading and such. We attempted to include
+  deprecated versions of the old types, but were unable to do so because of
+  changes to return types from a number of methods. With this change, any uses
+  of the `zeek::*::Tag` types will need to be replaced by `zeek::Tag`.
+
+- The DPD signature for SSL version 2 is no longer enabled by default. SSLv2
+  is basically extinct nowadays - and the protocol has a relatively high probability
+  of matching with random traffic and being misidentified. If you want to enable
+  the SSLv2 dpd signature, you can load the signature from `policy/protocols/ssl/dpd-v2.sig`
+
+  The DPD signature for SSL version 3 and up (including TLS 1.0 and above) now matches
+  for one-sided connections and does not require a reverst match anymore. This prevents
+  missed handshakes, where the client handshake contains a lot of data.
+
+New Functionality
+-----------------
+
+- We now provide minimal official Docker images for the Zeek project via two
+  repositories on the Docker hub, ``zeekurity/zeek`` and ``zeekurity/zeek-dev``.
+  The former receives all Zeek release versions, with tag ``zeek:latest`` being
+  the most recent. An image corresponding to our latest merge into the master
+  branch is tagged at ``zeek-dev:latest``.
+
+  The images run Debian and provide a full install of the Zeek distribution into
+  ``/usr/local/zeek``. They do not set Zeek-specific entrypoints or provide any
+  particular configuration for operationally running Zeek. To keep the images
+  lightweight they also do not contain a development toolchain as needed for
+  example to build a Zeek plugin. You can add any required system packages in a
+  derived image, or install them directly in the running container.
+
+- Zeek now supports formatting the C++ code using clang-format. Also provided is
+  a configuration for ``pre-commit`` to run clang-format when add new commits via
+  ``git``. More details can be found at https://github.com/zeek/zeek/wiki/Coding-Style-and-Conventions#clang-format.
+
+- Experimental support for speeding up Zeek script execution by compiling
+  scripts to a low-level form called "ZAM".  You activate this feature by
+  specifying ``-O ZAM`` on the command line.  See
+  ``src/script_opt/ZAM/README.md`` for more information.
+
+- Improvements for compiling scripts to C++ (an experimental optimization
+  feature introduced in 4.1).  The generated C++ now compiles much faster than
+  previously, though it can still take quite a while when using C++ optimization
+  on large sets of scripts.  You can incrementally compile additional scripts
+  using ``-O add-C++``.  See ``src/script_opt/CPP/README.md`` for details.
+
+- The new flags --optimize-files=/pat/ and --optimize-funcs=/pat/ apply
+  to both ZAM and compile-to-C++ script optimization.  The first instructs
+  Zeek to optimize any functions/hooks/event handlers residing in files
+  matching the given pattern (unanchored).  The second does the same but
+  based on the function name, and with the pattern anchored (so for example
+  --optimize-funcs=foo will optimize any functions named "foo" but not
+  those named "foobar", or "MYSCOPE::foo").  The flags can be combined
+  and can also be used multiple times to specify a set of patterns.
+  If neither flag is used then optimization is applied to all loaded
+  scripts; if used, then only to those that match.
+
+- The ``-uu`` flag for analyzing potentially unused record fields has been
+  removed because, due to other changes in script optimization, keeping it
+  would now require about 1,800 lines of code not otherwise needed.
+
+- The DNS analyzer has initial support for the SVCB and HTTPS types. The new
+  events are ``dns_SVCB`` and ``dns_HTTPS``.
+
+- The ``find_str`` and ``rfind_str`` bifs now support case-insensitive searches.
+
+- Added a new plugin hook for capturing packets that made it through analysis
+  without being processed called ``Plugin::HookUnprocessedPacket``. Currently
+  ARP packets or packets with a valid IP-based transport header are marked as
+  processed. This also adds an event called ``packet_not_processed`` that
+  reports the same packets.
+
+- A new command-line option ``-c`` or ``--capture-unprocessed`` will dump any
+  packets not marked as being processed, similar to the new hook and event
+  above.
+
+- In Zeek plugins, the new cmake function ``zeek_plugin_scripts()`` should be
+  used alongside ``zeek_plugin_cc()`` and related functions to establish
+  dependency tracking between Zeek scripts shipped with the plugin and plugin
+  rebuilds.  Previously, updates to included Zeek scripts didn't reliably
+  trigger a rebuild.
+
+- Added PacketAnalyzer::register_for_port(s) functions to the packet analyzer
+  framework in script-land. This allows a packet analyzer to register a port
+  mapping with a parent analyzer just like any other numeric identifier, while
+  also adding that port to the now-global Analyzer::ports table used by BPF
+  filtering.
+
+- Added AllAnalyzers::Tag enum type that combines the existing Analyzer::Tag,
+  PacketAnalyzer::Tag, and Files::Tags into a single enum. The existing types
+  still exist, but the new type can be used as an argument for
+  functions/hooks/events that need to handle any of the analyzer types.
+
+- Added protocol detection functionality to the packet analyzer framework.
+  Packet analyzers can register for protocol detection using the
+  ``PacketAnalyzer::register_protocol_detection`` script function and implement
+  the ``PacketAnalyzer::DetectProtocol`` method in C++. This allows packet
+  analyzer plugins to detect a protocol via byte matching or other heuristics
+  instead of relying solely on a numeric identifier for forwarding.
+
+- The JSON logger's new LogAscii::json_include_unset_fields flag provides
+  control over how to handle unset "&optional" fields. By default it continues
+  to skip such fields entirely. When redef'ing the flag to T it includes such
+  fields, with a "null" value. This simplifies data import use cases that
+  require fields to be present at all times, regardless of their value.
+
+- A new external testsuite, https://github.com/zeek/zeek-testing-cluster,
+  focuses on testing the emerging controller framework. It leverages the new
+  official Zeek Docker image for building docker-compose test setups, driven via
+  btest. The Github CI setup now includes a workflow that deploys and runs this
+  testsuite.
+
+- The GRE analyzer now supports the Aruba WLAN protocol type.
+
+Changed Functionality
+---------------------
+
+- Zeek now treats non-atomic index types for sets and tables more consistently.
+  Indexing now generally works with any types Zeek's hashing subsystem knows how
+  to serialize, meaning that you can now also index with sets, vectors,
+  patterns, and even tables.
+
+- The traditional TSV Zeek logs are now valid UTF8 by default. It's possible to
+  revert to the previous behavior by setting ``LogAscii::enable_utf_8`` to
+  false.
+
+- The ``SYN_packet`` record now records TCP timestamps (TSval/TSecr) when
+  available.
+
+- The ``init-plugin`` script now focuses purely on dynamic Zeek plugins. It no
+  longer generates Zeek packages. To instantiate new Zeek packages, use the
+  ``zkg create`` command instead.
+
+- The ``ignore_checksums`` options and the ``-C`` command-line option now
+  additionally cause Zeek to accept IPv4 packets that provide a length of zero
+  in the total-length IPv4 header field. When the length is set to zero, the
+  capture length of the packet is used instead.  This can be used to replay
+  traces, or analyze traffic when TCP sequence offloading is enabled on the
+  local NIC - which typically causes the total-length of affected packets to be
+  set to zero.
+
+- The existing tunnel analyzers for AYIYA, Geneve, GTPv1, Teredo, and VXLAN are
+  now packet analyzers.
+
+- C++ unit tests are now compiled in by default and can be disabled by
+  configuring the build with --disable-cpp-tests. We removed the former
+  --enable-cpp-tests configure flag. Unit tests now also work in (static and
+  dynamic) Zeek plugins.
+
+- This release expands the emerging cluster controller framework. Most changes
+  concern internals of the framework. Agent/controller connectivity management
+  has become more flexible: configuration updates pushed by the client can now
+  convey the agent topology, removing the need to hardwire/redef settings
+  in the controller. The new ClusterController::API::notify_agents_ready event
+  declares the management infrastructure ready for use. zeek-client's CLI has
+  expanded to support the new functionality.
+
+  The framework is still experimental and provides only a small subset of
+  ZeekControl's functionality. ZeekControl remains the recommended tool for
+  maintaining your cluster.
+
+- Entries in ``http.log`` now record the original ``HOST`` headers.
+  Previously, they would skip any port specification a header might
+  include.
+
+Deprecated Functionality
+------------------------
+
+- The ``protocol_confirmation`` and ``protocol_violation`` events along with the
+  corresponding ``Analyzer::ProtocolConfirmation` and
+  ``Analyzer::ProtocolViolation`` C++ methods are marked as deprecated. They are
+  replaced by ``analyzer_confirmation`` and ``analyzer_violation`` which can
+  also now be implemented in packet analyzers.
+
+- Declaring a local variable in an inner scope and then accessing it in an
+  outer scope is now deprecated.  For example,
+
+	if ( foo() )
+		{
+		local a = 5;
+		...
+		}
+	print a;
+
+  is deprecated.  You can address the issue by hoisting the declaration
+  to the outer scope, such as:
+
+	local a: count;
+	if ( foo() )
+		{
+		a = 5;
+		...
+		}
+	print a;
+
+Zeek 4.1.0
+==========
+
+New Functionality
+-----------------
+
+- Lambda functions can now use capture-list to help specify exactly which local
+  variables from outer scopes need to made available while evaluating the lambda
+  and also the method by which they're made available: deep vs. shallow copy.
+
+  For examples, see: https://docs.zeek.org/en/master/script-reference/types.html#type-function
+
+- Support for VN-Tag protocol headers: the new VN-Tag packet analyzer simply
+  skips past the VN-Tag header, allowing for further analysis of subsequent
+  packet contents.
+
+- Support for decapsulating Geneve packets to process the inner
+  payload, similar in operation to the existing VXLAN support.
+
+- Support for Zeek script "Reaching Definitions" (RD) analysis: tracking the
+  extent to which a given variable definition (assignment) can be visible
+  elsewhere in the Zeek script.  The analysis works on local variables in
+  function/event/hook bodies, but not across them.
+
+  The code tracks two forms of RDs, "minimal" (what's guaranteed to reach a
+  given point in a function body) and "maximal" (what possibly could reach).
+  Upcoming script optimization will use the latter, but the former currently
+  allows identification of places for which a value is used where it
+  does not appear that it will necessarily be defined. Specifying the
+  ``zeek -u`` option will generate warnings for instances where this holds for
+  local variables. Specifying ``zeek -uu`` turns on additional (expensive)
+  analysis to report instances where record fields might be used without
+  having previously been set.
+
+  The ``zeek -u`` option can also identify assigned-to variables that aren't
+  subsequently used (i.e. "dead code") and issues a warning.  A new ``is_used``
+  attribute can be used situationally to suppress such warnings.
+
+  The base scripts have some places where the static analysis lacks sufficient
+  power to tell that values are being used safely (guaranteed to have been
+  identified). In order to enable users to employ ``zeek -u`` on their own
+  scripts without being distracted by these instances, this change also
+  includes a new attribute, ``&is_assigned``, which can be associated with a
+  variable or a record field to inform Zeek's analysis that the script writer
+  asserts the value will be set, suppressing the associated warnings.
+
+- A Telemetry API was added to assist in gathering arbitrary runtime
+  metrics and allows export to Prometheus. This is still
+  work-in-progress, preliminary documentation for current, low-level
+  API lives at https://github.com/zeek/zeek/wiki/Telemetry for now.
+
+- Experimental support for translating Zeek scripts to equivalent C++.
+  The generated C++ can then be compiled directly into the ``zeek`` binary,
+  replacing use of the interpreter and producing better runtime performance.
+  See ``src/script_opt/CPP/README.md`` for a guide on how to use this feature.
+
+- Support for more generic session management. The NetSessions class has been
+  renamed to SessionMgr (with the old name marked deprecated). The new
+  class allows plugins to take advantage of session management similar to how
+  Connection objects were handled previously, but without the need to be based
+  on IP-based protocols.
+
+- The logging framework now provides a global policy hook, ``Log::log_stream_policy``.
+  Like the existing filter-level hooks, handlers for the new hook can provide
+  additional processing and veto the log write. The new hook runs once per
+  write, prior to any filter-level policy hooks. Even when it vetoes,
+  filter-level policy hooks still run, but cannot "un-veto" the write.
+
+- The ASCII writer gained a new option LogAscii::logdir, which can be used to
+  change the logging output directory.
+
+- Added a ``--include-plugins`` argument to ``configure``. This argument
+  takes a semicolon separated list of paths containing plugins that will be
+  statically built into Zeek.
+
+- Added a ``--plugindir`` argument to ``configure`` to set the
+  installation path for plugins.
+
+- The X509 analyzer now can check if a specific hostname is valid for a
+  certificate. Two new BIFs were added for this, ``x509_check_hostname`` and
+  ``x509_check_cert_hostname``. A new field ``sni_matches_cert`` that tracks
+  this information was added to ``ssl.log``.
+
+- Added new functions to dynamically enable/disable file analyzers:
+
+  - ``global enable_analyzer: function(tag: Files::Tag): bool;``
+  - ``global disable_analyzer: function(tag: Files::Tag): bool;``
+  - ``global analyzer_enabled: function(tag: Files::Tag): bool;``
+
+- Zeek now includes its own BTest tooling in the distribution, enabling other
+  tests (e.g. in Zeek packages) to use it. The ``$PREFIX/share/btest folder``,
+  reported via ``zeek-config --btest_tools_dir``, includes:
+
+  - ``scripts/`` for ``btest-diff`` canonifiers
+  - ``data/`` for data files, including ``random.seed``
+  - ``data/pcaps`` for the test pcaps
+
+  Configuring with ``--disable-btest-pcaps`` suppresses installation of the
+  test pcaps.
+
+- The Supervisor now defaults to starting with a minimal set of Zeek
+  scripts controlled by a new init file, ``base/init-supervisor.zeek``.
+  One may still run it with a larger configuration by loading additional
+  scripts, including ``init-default.zeek``, as always. (Bare mode continues
+  to work as usual, reducing the configuration to a minimum.)
+
+  The ``NodeConfig`` record has two new members, providing additional
+  control over launched nodes.  The ``env`` member allows setting environment
+  variables in the launched process.  The ``bare_mode`` member, an optional
+  boolean, provides control over the bare-mode state of the new node.
+  When not provided, the node inherits the bare-mode status of the
+  Supervisor, and setting the variable enables/disables bare mode.
+
+- Zeek now includes an incomplete, preliminary version of the future
+  cluster controller framework.  Loading ``policy/frameworks/cluster/agent``
+  and/or ``policy/frameworks/cluster/agent`` in a Zeek running with the
+  Supervisor will launch the corresponding cluster management node(s).
+  An experimental management client, `zeek-client`, connects to the
+  controller and lets you issue commands. It requires configuration with
+  ``--enable-zeek-client``.  This does not yet provide a functional
+  substitute for ``zeekctl``, which users should continue to use for now.
+
+Changed Functionality
+---------------------
+
+- The default IP-based transport protocols (UDP, TCP, and ICMP) have been
+  moved to the packet analysis framework. This change allows us to move other
+  analyzers in the future that better align with the packet analysis framework
+  than they do with session analysis.
 
 - The input framework's handling of unset fields (commonly expressed as "-")
   in ingested data is now safer and more consistent. When reading data into
@@ -147,174 +651,123 @@ This release fixes the following bugs:
 - The version field in ssh.log is now optional and will not be set if we cannot
   determine the version that was negotiated by the client and server.
 
-  https://github.com/zeek/zeek/pull/1605
+- Add a new field ``email_dest`` to NOTICEs, which defines where to
+  send email to. The email-related NOTICE actions fill this now, and
+  then emails will be sent to all recorded addresses at the end of
+  NOTICE processing. This makes email generation more consistent and
+  extensible.
 
-- Zeekctl could crash at startup on certain compilers and platforms due to a
-  memory corruption issue in the Broker python bindings.
+- Add page and email administrator to mails processed by hostnames extension.
 
-  https://github.com/zeek/broker/issues/187
+- SSL and X509 handling was significantly overhauled with the goal to make
+  the data that is logged by Zeek more helpful and compact.
 
-- The highwayhash submodule was updated to fix a build failure on FreeBSD for
-  PowerPC.
+  This change means that there are significant changes to the default log files,
+  as well as changes to functionality:
 
-  https://github.com/zeek/zeek/issues/1591
+  - ``x509.log`` is now indexed by the sha256 of the certificate, with deduplication
+    being automatically performed. By default, the same certificate is only logged
+    once per day.
 
-This release deprecates the following functionality:
+    This also means that the file ID is no longer present in X509 log. Similarly,
+    ``ssl.log`` now contains hashes for X509 certificates.
 
-- The stepping-stone analyzer is marked as deprecated. It was partially marked
-  as deprecated in 2.0, and will be fully removed in v4.1.
+    The hash function that is used for indexing the certificates is changeable by
+    changing the ``X509::hash_function`` option.
 
-  https://github.com/zeek/zeek/issues/1573
-  https://github.com/zeek/zeek/pull/1604
+    The time period after which a certificate is logged again can be configured by
+    changing ``X509::relog_known_certificates_after``.
 
-Zeek 4.0.2
-==========
+    By default deduplication of certificates is done across the entire cluster using
+    broker. If this is not desired due to the higher communication overhead, this
+    behavior can be disabled using ``X509::known_log_certs_use_broker``.
 
-This release fixes the following security issues:
+  - X509 certificates are, by default, no longer logged into files.log. This
+    behavior is configurable and the previous default can be restored by changing
+    the ``X509::log_x509_in_files_log`` option.
 
-- Fix potential Undefined Behavior in decode_netbios_name() and
-  decode_netbios_name_type() BIFs. The latter has a possibility of a remote
-  heap-buffer-overread, making this a potential DoS vulnerability.
+  - ``x509.log`` now tracks if a certificate was encountered as a end-host certificate
+    or as a client certificate.
 
-  https://github.com/zeek/zeek/pull/1533
-  https://github.com/zeek/zeek/pull/1563
+  - OCSP logging is now enabled by default.
 
-- Add some extra length checking when parsing mobile ipv6 packets. Due to the
-  possibility of reading invalid headers from remote sources, this is a
-  potential DoS vulnerability.
+  - ``ssl.log`` now no longer includes information about the certificate issuer and
+    subject. This information is still available in X509.log. If you need this
+    information in ``ssl.log``, the old behavior can be restored by changing the
+    ``SSL::log_include_server_certificate_subject_issuer`` and
+    ``SSL::log_include_client_certificate_subject_issuer`` configuration options.
 
-This release fixes the following bugs:
+  - ``ssl.log`` now contains a ``ssl_history`` field, which tracks which protocol
+    messages were seen in an SSL/TLS connection.
 
-- Fix heap-use-after-free after clear_table() on a table that uses expiration
-  attributes.
+  - We added a policy script ``ssl-log-ext.zeek`` which greatly extends the amount
+    of protocol information logged to SSL.log. The script is not loaded by default.
 
-  https://github.com/zeek/zeek/commit/d51bd4bc4675d4d7234da0d11e31dbede5efe17c
+  - We added a ``disable-certificate-events-known-certs.zeek`` policy script. This script
+    will completely disable X509 events for known certificates over SSL/TLS connections.
 
-- Add fatal error for if table/Dictionary state ever becomes invalid since
-  the behavior becomes unexpected/unclear at that point (e.g. when table
-  bucket positions become large enough to overflow their 16-bit storage due
-  to aggressive expiration-check settings preventing the re-positioning items)
+    For Zeek installations in settings where you encounter a lot of certificates,
+    this could improve the performance of your installation. Before enabling this
+    script, make sure that you do not use any third-party scripts that depend on the
+    X509 events. The script is not loaded by default.
 
-  https://github.com/zeek/zeek/commit/292e3e18a3691d835b2d52ab8462a90ae47b0ae7
+  - The ICSI SSL Notary script was deprecated. This functionality is superseeded by newer
+    approaches, like SCT validation (which is supported by Zeek).
 
-- Add missing "zeek/" to header includes, which can prevent external plugins
-  from compiling against Zeek source-tree (e.g. via ./configure --zeek-dist=)
+  - ``extract-certs-pem.zeek`` was deprecated - it never really worked in cluster modes.
+    A new policy script, ``log-certs-base64.zeek`` that can be used to log raw certificates
+    was added instead.
 
-  https://github.com/zeek/zeek/issues/1547
-  https://github.com/zeek/zeek/pull/1549
+- The CT logs listed in ``ct-list.zeek`` are now derived from the list of CT
+  logs that are accepted by Google Chrome. In the past, we allowed the list
+  of all known CT logs. This no longer makes sense since nowadays logs exist that
+  contain, e.g., only outdated or invalid certificates. If the old behavior is
+  desired, you can re-add Logs to ``SSL::ct_logs``.
 
-- Fix reading empty set[enum] values and any vector of enum values from config
-  files
+- The Mozilla CA list was updated to the state of NSS 3.67.
 
-  https://github.com/zeek/zeek/issues/1555
-  https://github.com/zeek/zeek/issues/1558
-  https://github.com/zeek/zeek/pull/1559
+- SQLite was updated to 3.36.0.
 
-- Fix type-checks related to list-type equality
+- The list of subnets that are considered private addresses was updated to mostly
+  match IANA's list unroutable addresses. This brings it in line with Chrome, the
+  W3C spec, and Python's ipaddress module.
 
-  https://github.com/zeek/zeek/issues/1296
-  https://github.com/zeek/zeek/pull/1358
+Removed Functionality
+---------------------
 
-Zeek 4.0.1
-==========
+- Support for the RocksDB Broker data store was previously broken and unusable,
+  so all code/options related to it are now removed.
 
-This release fixes the following security issue:
+- Support for the ``ENABLE_MOBILE_IPV6`` compiler variable has been removed. Mobile
+  IPv6 is now enabled by default. The ``--enable-mobile-ipv6`` option for
+  ``configure`` now returns a warning that it will be removed in v5.1 and no
+  longer has any effect.
 
-- Fix null-pointer dereference when encountering an invalid `enum` name in a
-  config/input file that tries to read it into a `set[enum]`.  For those
-  that have such an input feed whose contents may come from external/remote
-  sources, this is a potential DoS vulnerability.
+Deprecated Functionality
+------------------------
 
-  https://github.com/zeek/zeek/issues/1487
-  https://github.com/zeek/zeek/pull/1488
+- Lambda/closure support: automatic capturing of references to variables
+  outside a lambda's scope is now deprecated.  An explicit capture
+  list which also specifies the desired copy-semantics is now required when
+  writing lambda functions that refer to local variables of an outer scope.
 
-This release fixes the following bugs:
+  For examples, see: https://docs.zeek.org/en/master/script-reference/types.html#type-function
 
-- Fix mime type detection bug in IRC/FTP `file_transferred` event for file
-  data containing null-bytes
+- The ``IterCookie`` version of iteration over ``Dictionary`` and ``PDict``
+  objects was marked as deprecated. It was replaced by standard-library
+  compatible iterators. This enables the use of standard constructs such
+  as ranged-for loops to iterate over those objects.
 
-  https://github.com/zeek/zeek/pull/1430
+- The ``zeek::util::zeekenv()`` function is deprecated since use of all
+  environment variables prefixed by ``BRO_`` is now removed and calling
+  ``getenv()`` directly with ``ZEEK_`` environment variables can be done.
 
-- Fix potential for missing timestamps in SMB logs
+- ``supervisor_rotation_format_func`` is renamed to ``archiver_rotation_format_func``
 
-  https://github.com/zeek/zeek/pull/1436
-
-- Remove use of LeakSanitizer API on FreeBSD where it's unsupported
-
-  https://github.com/zeek/zeek/pull/1440
-
-- Fix incorrect parsing of ERSPAN Type I
-
-  https://github.com/zeek/zeek/pull/1445
-  https://github.com/zeek/zeek/commit/f53fb9a22e1ad5aa1ebdf726f241c9cad0ceeb32
-
-- Fix incorrect/overflowed `n` value for `SSL_Heartbeat_Many_Requests` notices
-  where number of server heartbeats is greater than number of client heartbeats.
-
-  https://github.com/zeek/zeek/issues/1454
-  https://github.com/zeek/zeek/pull/1459
-  https://github.com/zeek/zeek/commit/c23e3ca1056c03be347da6163a8e447670ce06b1
-
-- Fix missing `user_agent` existence check in `smtp/software.zeek`
-  (causes `reporter.log` error noise, but no functional difference)
-
-  https://github.com/zeek/zeek/pull/1455
-  https://github.com/zeek/zeek/commit/83d5b44462722c5571b33eb6bcb0491af90cccc7
-
-- Fix include order of bundled headers to avoid conflicts with
-  pre-existing/system-wide installs
-
-  https://github.com/zeek/zeek/pull/1465
-
-- Fix musl build (e.g. Void, Alpine, etc.)
-
-  https://github.com/zeek/zeek/pull/1469
-  https://github.com/zeek/zeek/commit/2ad482535ee36c99d7f9ea3bcd3077cb9c81bc78
-
-- Fix build with `-DENABLE_MOBILE_IPV6 ` / `./configure --enable-mobile-ipv6`
-
-  https://github.com/zeek/zeek/issues/1493
-  https://github.com/zeek/zeek/pull/1495
-
-- Add check for null packet data in pcap IOSource, which is an observed state
-  in Myricom libpcap that crashes Zeek via null-pointer dereference
-
-  https://github.com/zeek/zeek/pull/1498
-
-- Allow CRLF line-endings in Zeek scripts and signature files
-
-  https://github.com/zeek/zeek/issues/1497
-  https://github.com/zeek/zeek/pull/1499
-
-- Fix armv7 build
-
-  https://github.com/zeek/zeek/issues/1496
-  https://github.com/zeek/zeek/issues/1502
-
-- Fix unserialization of `set[function]`, generally now used by `connection`
-  record removal hooks, and specifically breaking `intel.log` of Zeek clusters
-
-  https://github.com/zeek/zeek/issues/1506
-  https://github.com/zeek/zeek/pull/1513
-
-- Fix indexing of set/table types with a vector
-
-  https://github.com/zeek/zeek/pull/1514
-
-- Fix precision loss in ASCII logging/printing of large double, time, or
-  interval values
-
-  https://github.com/zeek/zeek/issues/1450
-  https://github.com/zeek/zeek/pull/1494
-
-- Improve handling of invalid SIP data before requests
-
-  https://github.com/zeek/zeek/issues/1507
-  https://github.com/zeek/zeek/pull/1511
-
-- Fix `copy()`/cloning vectors that have holes (indices w/ null values)
-
-  https://github.com/zeek/zeek/commit/180ab3181f7743cf57b74a2840bd1d701679647b
+- The ``MemoryAllocation()`` function implemented by a number of interfaces
+  is now deprecated. In testing we found that the values returned were mostly
+  incorrect and weren't useful. The ``val_size`` and ``global_sizes`` BIF
+  methods have also both been marked deprecated.
 
 Zeek 4.0.0
 ==========
